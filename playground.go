@@ -22,6 +22,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"path"
 	"strings"
 	"time"
@@ -44,24 +45,26 @@ type ServerResponse struct {
 	Transaction *coraza.Transaction
 }
 
-var CRS_PATH string
-
 func main() {
-	port := flag.Int("port", 8080, "port to listen")
-	address := flag.String("addr", "0.0.0.0", "Address to listen")
-	crsp := flag.String("crs", "./crs", "Path to find OWASP CRS")
+	conf := flag.String("conf", "./playground.yaml", "config file to parse")
 	flag.Parse()
 
-	fs := http.FileServer(http.Dir("./public/"))
-	CRS_PATH = *crsp
+	settings, err := OpenConfig(*conf)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 
+	fs := http.FileServer(http.Dir("./public/"))
 	http.Handle("/public/", fs)
-	http.HandleFunc("/results", apiHandler)
+	http.HandleFunc("/results", func(w http.ResponseWriter, r *http.Request) {
+		apiHandler(w, r, settings)
+	})
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./www/client.html")
 	})
 	s := &http.Server{
-		Addr:           fmt.Sprintf("%s:%d", *address, *port),
+		Addr:           fmt.Sprintf("%s:%d", settings.Address, settings.Port),
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
@@ -74,7 +77,7 @@ func errorHandler(w http.ResponseWriter, err string) {
 	w.Write([]byte(err))
 }
 
-func apiHandler(w http.ResponseWriter, req *http.Request) {
+func apiHandler(w http.ResponseWriter, req *http.Request, settings *Config) {
 	var r ClientRequest
 	err := json.NewDecoder(req.Body).Decode(&r)
 	if err != nil {
@@ -82,12 +85,32 @@ func apiHandler(w http.ResponseWriter, req *http.Request) {
 		//return
 	}
 	waf := coraza.NewWaf()
-	waf.DataDir = CRS_PATH
+	if settings.CrsPath != "" {
+		waf.DataDir = settings.CrsPath
+	}
+
 	parser, _ := seclang.NewParser(waf)
-	parser.FromString(r.Directives)
+	if settings.Disable != nil {
+		if len(settings.Disable.Operators) > 0 {
+			parser.DisabledRuleOperators = append(parser.DisabledRuleOperators, settings.Disable.Operators...)
+		}
+		if len(settings.Disable.Directives) > 0 {
+			parser.DisabledDirectives = append(parser.DisabledDirectives, settings.Disable.Directives...)
+		}
+		if len(settings.Disable.Actions) > 0 {
+			parser.DisabledRuleActions = append(parser.DisabledRuleActions, settings.Disable.Actions...)
+		}
+	}
+	err = parser.FromString(r.Directives)
+	if err != nil {
+		tt := `{{.}}`
+		t := template.Must(template.New("none").Parse(tt))
+		t.Execute(w, "ERROR: "+err.Error())
+		return
+	}
 	if r.Crs {
 		fmt.Println("Loading CRS rules")
-		err = loadCrs(parser)
+		err = loadCrs(settings.CrsPath, parser)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -113,7 +136,7 @@ func apiHandler(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func loadCrs(pp *seclang.Parser) error {
+func loadCrs(location string, pp *seclang.Parser) error {
 	files := []string{
 		"REQUEST-901-INITIALIZATION.conf",
 		"REQUEST-903.9001-DRUPAL-EXCLUSION-RULES.conf",
@@ -151,7 +174,7 @@ func loadCrs(pp *seclang.Parser) error {
 
 	var err error
 	for _, f := range files {
-		p := path.Join(CRS_PATH, f)
+		p := path.Join(location, f)
 		content, err := ioutil.ReadFile(p)
 		if err != nil {
 			return err

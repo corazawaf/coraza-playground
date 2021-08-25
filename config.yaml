@@ -1,0 +1,10 @@
+port: 80
+address: 0.0.0.0
+crs_path: 
+disable:
+  operators:
+    - inspectFile
+  actions:
+    - exec
+  directives:
+    - SecScript
