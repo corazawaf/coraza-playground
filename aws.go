@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"os"
 	"regexp"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -18,9 +19,15 @@ var s3session *session.Session
 
 func connectAws() error {
 	var err error
+	region := os.Getenv("AWS_REGION")
+	if region == "" {
+		region = "us-east-1"
+	}
+
 	s3session, err = session.NewSession(
 		&aws.Config{
 			Credentials: credentials.NewEnvCredentials(),
+			Region:      &region,
 		})
 
 	return err
