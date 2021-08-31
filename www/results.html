@@ -12,9 +12,6 @@
     <li class="nav-item">
         <a class="nav-link" data-toggle="tab" href="#auditlog">Audit Log</a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link" data-toggle="tab" href="#menu2">Stdout</a>
-    </li>
 </ul>
 <div class="tab-content p-1 overflow-auto" style="height:40vh;">
     <div id="menu1" class="tab-pane in active p-1">
@@ -60,20 +57,13 @@
         </table>
     </div>
     <div id="matched" class="tab-pane">
-        <table>
-            <tbody>
                 {{ range $i, $mr := .Transaction.MatchedRules}}
-                <tr>
-                    <td>{{ $mr.Rule.Id }}</td>
-                    <td>{{ $mr.Rule.Raw }}</td>
-                </tr>
+                <strong>{{ $mr.Rule.Id }}:</strong> {{ range $i := $mr.Messages }}{{ $i }}<br>{{ end }}<br>
                 {{ end }}
-            </tbody>
-        </table>
     </div>
     <div id="collections" class="tab-pane">
         <input class="form-control" placeholder="Type something to apply filters" onkeyup="filtercols(this);">
-        <table id="collections">
+        <table id="collections" style="width:100%;">
             <thead>
                 <tr>
                     <th width="25%">Collection</th>

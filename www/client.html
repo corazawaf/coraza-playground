@@ -49,6 +49,7 @@
         .top-menu {
             width: 100%;
             height: 5vh;
+            min-height: 40px; /* TODO check */
             border-bottom: 1px solid #cfd0d1;
         }
 
@@ -101,14 +102,14 @@
                 <a class="nav-link" href="#" onclick="run();"><i class="fas fa-play"></i> Run</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fas fa-folder"></i> Files</a>
+                <a class="nav-link" href="#" onclick="save();"><i class="fas fa-share"></i> Share</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="https://github.com/jptosso/coraza-waf" target="_blank"><i
                         class="fab fa-github"></i> Github</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="https://jptosso.github.io/coraza-waf/" target="_blank"><i
+                <a class="nav-link" href="https://www.coraza.io/docs" target="_blank"><i
                         class="fas fa-question-circle"></i> Documentation</a>
             </li>
         </ul>
@@ -127,12 +128,6 @@
                     <label class="form-check-label" for="defaultCheck3">
                         Use CRS (latest) <a href="#" style="padding-left:1vh;"><i
                                 class="fas fa-question-circle"></i></a>
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck4">
-                    <label class="form-check-label" for="defaultCheck4">
-                        Autosave Changes
                     </label>
                 </div>
                 <!--Evaluate phases-->
@@ -171,25 +166,56 @@
     <script>
         var ua = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0";
         var directives = CodeMirror(document.querySelector("#directives"), {
-            value: "SecRule REMOTE_ADDR \"127.0.0.1\" \"id:1,deny,log\"\n",
+            value: "{{.Directives}}",
             theme: "ayu-dark",
             mode: "none"
         });
 
         var http_req = CodeMirror(document.querySelector("#httprequest"), {
-            value: "POST /testpath?query=data HTTP/1.1\nHost: somehost.com:80\nContent-Type: application/x-www-form-urlencoded\nUser-Agent: " + ua + "\nX-Real-Ip: 127.0.0.1\nContent-length: 21\n\nsomecontent=somevalue",
+            value: "{{.Request}}",
             theme: "ayu-dark",
             mode: "http"
         });
 
         var http_res = CodeMirror(document.querySelector("#httpresponse"), {
-            value: "HTTP/1.1 200 OK\nContent-length: 2\n\nOk",
+            value: "{{.Response}}",
             theme: "ayu-dark",
             mode: "http"
         });
 
+        $('#use_crs').prop("checked", {{.Crs}});
+
         function run() {
             $('#loader').show();
+            var obj = getRequest();
+            $.ajax({
+                type: "POST",
+                url: "/results",
+                data: JSON.stringify(obj),
+                complete: function (data) {
+                    $('#loader').hide();
+                    $('#results').html(data.responseText);
+                }
+            });
+        }
+
+        function save(){
+            $('#loader').show();
+            var obj = getRequest();
+            $.ajax({
+                type: "POST",
+                url: "/save",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    document.location = data;
+                }, error: function(r){
+                    alert("Error!\n" + r.responseText)
+                    $('#loader').hide();
+                }
+            });            
+        }
+
+        function getRequest(){
             var req = http_req.getValue();
             var regex = /Content-length:.*\n/g;
             var content = "";
@@ -201,21 +227,12 @@
                     http_req.setValue(req);
                 }
             } catch (err) { }
-            var obj = {
+            return {
                 crs: $('#use_crs').prop('checked'),
                 directives: directives.getValue(),
                 request: http_req.getValue(),
-                response: ""
-            };
-            $.ajax({
-                type: "POST",
-                url: "/results",
-                data: JSON.stringify(obj),
-                complete: function (data) {
-                    $('#loader').hide();
-                    $('#results').html(data.responseText);
-                }
-            });
+                response: http_res.getValue()
+            };            
         }
 
         function filtercols(ele) {

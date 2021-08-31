@@ -1,10 +1,16 @@
 port: 80
 address: 0.0.0.0
 crs_path: 
+aws:
+  enabled: true
+  bucket: coraza-playground
+crs:
+  enabled: true
+  path: /tmp/coraza
 disable:
   operators:
     - inspectFile
   actions:
     - exec
   directives:
-    - SecScript
+    - SecRuleScript
