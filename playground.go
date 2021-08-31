@@ -36,7 +36,7 @@ import (
 )
 
 var defaultRequest = "POST /testpath?query=data HTTP/1.1\nHost: somehost.com:80\nContent-Type: application/x-www-form-urlencoded\nUser-Agent: SomeUserAgent\nX-Real-Ip: 127.0.0.1\nContent-length: 21\n\nsomecontent=somevalue"
-var defaultResponse = `HTTP/1.1 200 OK\nContent-length: 2\n\nOk`
+var defaultResponse = "HTTP/1.1 200 OK\nContent-length: 2\n\nOk"
 var defaultDirectives = "SecDefaultAction \"phase:1,log,auditlog,pass\"\nSecDefaultAction \"phase:2,log,auditlog,pass\"\nSecAction \"id:900990,\\\n\tphase:1,\\\n\tnolog,\\\n\tpass,\\\n\tt:none,\\\n\tsetvar:tx.crs_setup_version=340\""
 
 type ClientRequest struct {
