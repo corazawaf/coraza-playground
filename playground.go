@@ -192,6 +192,7 @@ func apiHandler(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 	tx := waf.NewTransaction()
+	defer tx.ProcessLogging()
 	_, err = tx.ParseRequestReader(strings.NewReader(r.Request))
 	if err != nil {
 		errorHandler(w, "Invalid HTTP Request: "+err.Error())
@@ -204,7 +205,11 @@ func apiHandler(w http.ResponseWriter, req *http.Request) {
 	}
 	w.Header().Set("Content-Type", "text/html")
 	parsedTemplate, _ := template.ParseFiles("www/results.html")
-	json, _ := tx.AuditLog().JSON()
+	json, err := tx.AuditLog().JSON()
+	if err != nil {
+		errorHandler(w, err.Error())
+		return
+	}
 	sr := &ServerResponse{
 		Transaction: tx,
 		AuditLog:    string(json),
