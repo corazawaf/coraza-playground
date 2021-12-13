@@ -19,7 +19,7 @@
             <tbody>
                 <tr>
                     <td>Id</td>
-                    <td>{{.Transaction.Id}}</td>
+                    <td>{{.Transaction.ID}}</td>
                 </tr>
                 <tr>
                     <td>Disruptive action</td>
@@ -58,7 +58,7 @@
     </div>
     <div id="matched" class="tab-pane">
                 {{ range $i, $mr := .Transaction.MatchedRules}}
-                <strong>{{ $mr.Rule.Id }}:</strong> {{ range $i := $mr.Messages }}{{ $i }}<br>{{ end }}<br>
+                <strong>{{ $mr.Rule.ID }}:</strong> {{ $mr.Message }}<br>
                 {{ end }}
     </div>
     <div id="collections" class="tab-pane">
@@ -73,7 +73,7 @@
                 </tr>
             </thead>
             <tbody>
-                {{ range $colname, $col := .Transaction.GetCollections }}
+                {{ range $colname, $col := .Transaction.collections }}
                 {{ range $key, $data := $col.Data }}
                 {{ range $i, $value := $data }}
                 <tr>

@@ -12,7 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"github.com/jptosso/coraza-waf/utils"
+	utils "github.com/jptosso/coraza-waf/v2/utils/strings"
 )
 
 var s3session *session.Session
@@ -54,7 +54,7 @@ func getItem(id string) (ClientRequest, error) {
 }
 
 func uploadItem(data []byte) (string, error) {
-	tname := utils.RandomString(16)
+	tname := utils.SafeRandom(10)
 	if s3session == nil {
 		return "", fmt.Errorf("aws session was not started")
 	}

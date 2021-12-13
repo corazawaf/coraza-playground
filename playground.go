@@ -31,8 +31,10 @@ import (
 
 	"github.com/gorilla/mux"
 
-	coraza "github.com/jptosso/coraza-waf"
-	"github.com/jptosso/coraza-waf/seclang"
+	_ "github.com/jptosso/coraza-libinjection"
+	_ "github.com/jptosso/coraza-pcre"
+	"github.com/jptosso/coraza-waf/v2"
+	"github.com/jptosso/coraza-waf/v2/seclang"
 )
 
 var defaultRequest = "POST /testpath?query=data HTTP/1.1\nHost: somehost.com:80\nContent-Type: application/x-www-form-urlencoded\nUser-Agent: SomeUserAgent\nX-Real-Ip: 127.0.0.1\nContent-length: 21\n\nsomecontent=somevalue"
@@ -205,7 +207,7 @@ func apiHandler(w http.ResponseWriter, req *http.Request) {
 	}
 	w.Header().Set("Content-Type", "text/html")
 	parsedTemplate, _ := template.ParseFiles("www/results.html")
-	json, err := tx.AuditLog().JSON()
+	json, err := json.Marshal(tx.AuditLog())
 	if err != nil {
 		errorHandler(w, err.Error())
 		return
