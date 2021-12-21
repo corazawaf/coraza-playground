@@ -217,6 +217,10 @@ func apiHandler(w http.ResponseWriter, req *http.Request) {
 	collections := []coraza.Collection{}
 	for i := variables.RuleVariable(1); i < variables.Count; i++ {
 		if col := tx.GetCollection(i); col != nil {
+			if i.Name() == "ENV" {
+				// we skip env for security reasons
+				continue
+			}
 			collections = append(collections, *col)
 			continue
 		}
