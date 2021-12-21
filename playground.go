@@ -215,7 +215,7 @@ func apiHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	collections := []coraza.Collection{}
-	for i := variables.RuleVariable(1); i < 100; i++ {
+	for i := variables.RuleVariable(1); i < variables.Count; i++ {
 		if col := tx.GetCollection(i); col != nil {
 			collections = append(collections, *col)
 			continue
