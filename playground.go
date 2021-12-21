@@ -170,13 +170,13 @@ func apiHandler(w http.ResponseWriter, req *http.Request) {
 
 	parser, _ := seclang.NewParser(waf)
 	if len(settings.Disable.Operators) > 0 {
-		parser.DisabledRuleOperators = append(parser.DisabledRuleOperators, settings.Disable.Operators...)
+		waf.GetConfig("disabled_rule_operators", settings.Disable.Operators)
 	}
 	if len(settings.Disable.Directives) > 0 {
-		parser.DisabledDirectives = append(parser.DisabledDirectives, settings.Disable.Directives...)
+		waf.GetConfig("disabled_directives", settings.Disable.Directives)
 	}
 	if len(settings.Disable.Actions) > 0 {
-		parser.DisabledRuleActions = append(parser.DisabledRuleActions, settings.Disable.Actions...)
+		waf.GetConfig("disabled_rule_actions", settings.Disable.Actions)
 	}
 	err = parser.FromString(r.Directives)
 	if err != nil {

@@ -22,6 +22,8 @@ github.com/jptosso/coraza-pcre v0.0.0-20211201204829-1bea0f044896/go.mod h1:0Nie
 github.com/jptosso/coraza-waf/v2 v2.0.0-beta.2.0.20211201203316-49869b6ff2ea/go.mod h1:d9K0ycCNi9YmgqQKjgOheq73EY4l6fB8Y6HdLWcx5FM=
 github.com/jptosso/coraza-waf/v2 v2.0.0-beta.3.0.20211202030827-28bb60870e24 h1:imWHBz9qxuzwKc74usa19UGDpXPqA2RFX0fKeHde1X4=
 github.com/jptosso/coraza-waf/v2 v2.0.0-beta.3.0.20211202030827-28bb60870e24/go.mod h1:d9K0ycCNi9YmgqQKjgOheq73EY4l6fB8Y6HdLWcx5FM=
+github.com/jptosso/coraza-waf/v2 v2.0.0-beta.6.0.20211217191841-efdf8ccbcd9d h1:aRI0nEgsZtpkNZYI6/vbCODAgbNitvTyESm7Sni05IQ=
+github.com/jptosso/coraza-waf/v2 v2.0.0-beta.6.0.20211217191841-efdf8ccbcd9d/go.mod h1:d9K0ycCNi9YmgqQKjgOheq73EY4l6fB8Y6HdLWcx5FM=
 github.com/kr/pretty v0.1.0 h1:L/CwN0zerZDmRFUapSPitk6f+Q3+0za1rQkzVuMiMFI=
 github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORNo=
 github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
