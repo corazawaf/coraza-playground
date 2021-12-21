@@ -30,6 +30,9 @@ func connectAws() error {
 			Region:      &region,
 		})
 
+	// we shouldn't expose the ENV variable, it could be used to
+	// steal credentials
+	os.Clearenv()
 	return err
 }
 
