@@ -35,6 +35,7 @@ import (
 	_ "github.com/jptosso/coraza-pcre"
 	"github.com/jptosso/coraza-waf/v2"
 	"github.com/jptosso/coraza-waf/v2/seclang"
+	"github.com/jptosso/coraza-waf/v2/types/variables"
 )
 
 var defaultRequest = "POST /testpath?query=data HTTP/1.1\nHost: somehost.com:80\nContent-Type: application/x-www-form-urlencoded\nUser-Agent: SomeUserAgent\nX-Real-Ip: 127.0.0.1\nContent-length: 21\n\nsomecontent=somevalue"
@@ -53,6 +54,7 @@ type ServerResponse struct {
 	AuditLog    string
 	Output      string
 	Transaction *coraza.Transaction
+	Collections []coraza.Collection
 }
 
 var settings Config
@@ -212,8 +214,17 @@ func apiHandler(w http.ResponseWriter, req *http.Request) {
 		errorHandler(w, err.Error())
 		return
 	}
+	collections := []coraza.Collection{}
+	for i := variables.RuleVariable(1); i < 100; i++ {
+		if col := tx.GetCollection(i); col != nil {
+			collections = append(collections, *col)
+			continue
+		}
+		break
+	}
 	sr := &ServerResponse{
 		Transaction: tx,
+		Collections: collections,
 		AuditLog:    string(json),
 	}
 	err = parsedTemplate.Execute(w, sr)

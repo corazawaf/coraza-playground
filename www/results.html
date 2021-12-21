@@ -73,11 +73,11 @@
                 </tr>
             </thead>
             <tbody>
-                {{ range $colname, $col := .Transaction.collections }}
+                {{ range $col := .Collections }}
                 {{ range $key, $data := $col.Data }}
                 {{ range $i, $value := $data }}
                 <tr>
-                    <td>{{ $colname }}</td>
+                    <td>{{ $col.Name }}</td>
                     <td>{{ $key }}</td>
                     <td>{{ $i }}</td>
                     <td>{{ $value }}</td>
