@@ -13,12 +13,7 @@ import (
 	"strings"
 )
 
-const DEFAULT_VERSION = "v3.3.2"
-
 func downloadCrs(version string, dest string) error {
-	if version == "" {
-		version = DEFAULT_VERSION
-	}
 	if getCurrentCrs(dest) == version {
 		fmt.Printf("[CRS] Already on version %s\n", version)
 		return nil
@@ -46,16 +41,11 @@ func downloadCrs(version string, dest string) error {
 	fmt.Printf("[CRS] Setting rule path: %s\n", rulespath)
 	// we build the CRS file
 	files, _ := filepath.Glob(rulespath + "/*.conf")
-	fmt.Println("[CRS] Merging...")
-	if err := mergefiles(files, dest); err != nil {
-		return err
-	}
-	fmt.Printf("[CRS] %d files merged\n", len(files))
 
 	fmt.Println("[CRS] Moving...")
 
 	// we move the data files
-	files, _ = filepath.Glob(rulespath + "/*.data")
+	files, _ = filepath.Glob(rulespath + "/*")
 	for _, f := range files {
 		err := os.Rename(f, path.Join(dest, filepath.Base(f)))
 		if err != nil {
@@ -125,27 +115,4 @@ func unpackCrs(src io.Reader, dest string) ([]string, error) {
 			filenames = append(filenames, name)
 		}
 	}
-}
-
-func mergefiles(files []string, dst string) error {
-	if _, err := os.Stat(dst); err != nil {
-		err = os.MkdirAll(dst, 0755)
-		if err != nil {
-			return err
-		}
-	}
-	f, err := os.Create(path.Join(dst, "crs.conf"))
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	for _, file := range files {
-		data, err := os.ReadFile(file)
-		if err != nil {
-			return err
-		}
-		f.Write(data)
-		f.Write([]byte{'\n'})
-	}
-	return nil
 }

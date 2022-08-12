@@ -1,0 +1,9 @@
+version: "3"
+services:
+  front:
+    build: ./web
+    command: file-server --root /www/
+    ports:
+      - "8000:80"
+  crs:
+    build: ./crs

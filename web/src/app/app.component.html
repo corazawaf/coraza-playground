@@ -1,0 +1,46 @@
+<mat-drawer-container class="playground-container" autosize>
+  <mat-drawer #drawer class="playground-sidenav" mode="side" opened="true">
+  <mat-selection-list #phaselist>
+    <mat-list-option #e *ngFor="let phase of phases;let index" [selected]="phase.value" [value]="phase.label" (click)="updatePhases(phase, e)">
+      {{phase.label}}
+    </mat-list-option>
+  </mat-selection-list>
+  <mat-form-field appearance="fill" class="select-version">
+    <mat-label>Coraza Version</mat-label>
+    <mat-select>
+      <mat-option *ngFor="let version of coraza_versions">
+        {{version}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="fill" class="select-version">
+    <mat-label>CRS Version</mat-label>
+    <mat-select>
+      <mat-option *ngFor="let version of crs_versions">
+        {{version}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  </mat-drawer>
+
+  <div class="playground-sidenav-content">
+  <mat-toolbar>
+    <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon" (click)="drawer.toggle()">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span>Coraza Playground</span>
+    <span class="example-spacer"></span>
+    <div class="top-buttons">
+        <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon" (click)="drawer.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon" (click)="drawer.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+    </div>    
+  </mat-toolbar>
+    <!-- rest of the content -->
+    <app-http-editor></app-http-editor>
+  </div>
+
+</mat-drawer-container>

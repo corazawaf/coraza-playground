@@ -1,0 +1,13 @@
+:8080 {
+    handle_path /api/v2 {
+        reverse_proxy coraza_v2:80
+    }
+
+    handle_path /api/v3 {
+        reverse_proxy coraza_v3:80
+    }    
+
+    file_server / {
+        root          /var/www/html/
+    }
+}
