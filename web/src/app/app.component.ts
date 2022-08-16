@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { MatListOption } from '@angular/material/list';
+import { MatCheckboxChange } from '@angular/material/checkbox';
+// import { MatListOption } from '@angular/material/list';
 
 @Component({
   selector: 'app-root',
@@ -8,43 +9,42 @@ import { MatListOption } from '@angular/material/list';
 })
 export class AppComponent {
   title = 'OWASP Coraza Playground';
-  phases: any[] = [
+  phases: Phase[] = [
     {
       label: 'Request Headers', 
-      value: true,
-      index: 1,
+      value: false
     },
     {
       label: 'Request Body', 
-      value: true,
-      index: 2,
+      value: false
     },
     {
       label: 'Response Headers', 
-      value: true,
-      index: 3,
+      value: false
     },
     {
       label: 'Response Body', 
-      value: true,
-      index: 4,
+      value: false
     },
     {
       label: 'Logging',
-      value: true,
-      index: 5,
+      value: false
     }
   ];
   coraza_versions = ["v2.0.1"];
   crs_versions = ["latest"];
-  public updatePhases(option: any, event: any) {
-    console.log(event);
-    this.phases.forEach(phase => {
-      if (phase.index <= option.index) {
-        phase.value = true;
-      } else {
-        phase.value = false;
+
+  public updatePhases(option: MatCheckboxChange) {
+    for (var i = 0; i < this.phases.length; i++) {
+      this.phases[i].value = option.checked;
+      if(this.phases[i].label === option.source.value) {
+        break;
       }
-    });
+    }
   }
+}
+
+export interface Phase {
+  label: string;
+  value: boolean;
 }

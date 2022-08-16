@@ -6,28 +6,30 @@ import { HttpEditorComponent } from './http-editor/http-editor.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import {MatTableModule } from '@angular/material/table';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { EditorComponent } from './editor/editor.component';
 import { CorazaResponseComponent } from './coraza-response/coraza-response.component';
+import { EditorModule } from './editor/editor.module';
+import { CodeEditorModule } from '@ngstack/code-editor';
 
 @NgModule({
   declarations: [
     AppComponent,
     HttpEditorComponent,
-    EditorComponent,
     CorazaResponseComponent,
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    CodeEditorModule.forRoot(),
+    EditorModule,
     MatToolbarModule,
     MatSidenavModule,
     MatIconModule,
-    MatListModule,
+    MatCheckboxModule,
     MatSelectModule,
     MatTabsModule,
     MatTableModule,
