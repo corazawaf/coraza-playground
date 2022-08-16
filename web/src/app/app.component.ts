@@ -31,7 +31,7 @@ export class AppComponent {
       value: false
     }
   ];
-  coraza_versions = ["v2.0.1"];
+  coraza_versions = ["v2.0.1", "v3/latest", "v3-tinygo"];
   crs_versions = ["latest"];
 
   public updatePhases(option: MatCheckboxChange) {
