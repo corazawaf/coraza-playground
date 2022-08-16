@@ -1,10 +1,10 @@
 <mat-drawer-container class="playground-container" autosize>
   <mat-drawer #drawer class="playground-sidenav" mode="side" opened="true">
-  <mat-selection-list #phaselist>
-    <mat-list-option #e *ngFor="let phase of phases;let index" [selected]="phase.value" [value]="phase.label" (click)="updatePhases(phase, e)">
+  <div class="phases-checkboxs-container">
+    <mat-checkbox *ngFor="let phase of phases" class="phase-checkbox" [checked]="phase.value" [value]="phase.label" (change)="updatePhases($event)">
       {{phase.label}}
-    </mat-list-option>
-  </mat-selection-list>
+    </mat-checkbox>
+  </div>
   <mat-form-field appearance="fill" class="select-version">
     <mat-label>Coraza Version</mat-label>
     <mat-select>
@@ -24,17 +24,18 @@
   </mat-drawer>
 
   <div class="playground-sidenav-content">
-  <mat-toolbar>
-    <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon" (click)="drawer.toggle()">
-      <mat-icon>menu</mat-icon>
-    </button>
-    <span>Coraza Playground</span>
-    <span class="example-spacer"></span>
-    <div class="top-buttons">
-        <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon" (click)="drawer.toggle()">
+  <mat-toolbar class="buttons-container">
+    <div class="left-buttons">
+      <button mat-icon-button class="menu-button" aria-label="Example icon-button with menu icon" (click)="drawer.toggle()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span class="title">Coraza Playground</span>
+    </div>
+    <div class="right-buttons">
+        <button mat-icon-button class="menu-button" aria-label="Example icon-button with menu icon" (click)="drawer.toggle()">
           <mat-icon>menu</mat-icon>
         </button>
-        <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon" (click)="drawer.toggle()">
+        <button mat-icon-button class="menu-button" aria-label="Example icon-button with menu icon" (click)="drawer.toggle()">
           <mat-icon>menu</mat-icon>
         </button>
     </div>    

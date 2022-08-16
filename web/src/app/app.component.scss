@@ -8,5 +8,47 @@
     display:block;
 }
 
-.button-container {
+.phases-checkboxs-container {
+    display: flex;
+    flex-direction: column;
+    margin: 20px 0px 20px 10px;
+
+    .phase-checkbox {
+        padding-bottom: 20px;
+
+        &:last-child {
+            padding-bottom: 0px;
+        }
+    }
+}
+
+.buttons-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    
+    .left-buttons {
+        display: flex;
+
+        .menu-button {
+            margin-right: 20px;
+            cursor: pointer;
+        }
+
+        .title {
+            align-self: center;
+        }
+    }
+
+    .right-buttons {
+        
+        .menu-button {
+            margin-right: 20px;
+            cursor: pointer;
+
+            &:last-child {
+                margin-right: 0px;
+            }
+        }
+    }
 }

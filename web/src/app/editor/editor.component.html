@@ -1,1 +1,8 @@
-<textarea [name]="name" class="ngx-codemirror"  #ref></textarea>
+<ngs-code-editor
+  class="editor"
+  [theme]="theme"
+  [codeModel]="codeModel"
+  [options]="options"
+  (valueChanged)="onCodeChanged($event)"
+>
+</ngs-code-editor>
