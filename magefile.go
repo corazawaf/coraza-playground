@@ -35,6 +35,10 @@ func Build() error {
 	return nil
 }
 
+func Test() error {
+	return sh.RunV("go", "test", "./internal")
+}
+
 func Run() error {
 	return sh.RunV("go", "run", "testserver/main.go")
 }

@@ -1,4 +1,4 @@
-module github.com/jptosso/coraza-playground
+module github.com/corazawaf/coraza-playground
 
 go 1.16
 
