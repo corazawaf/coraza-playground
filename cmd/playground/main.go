@@ -4,15 +4,11 @@
 package main
 
 import (
-	"strconv"
 	"strings"
 	"syscall/js"
 
 	"github.com/corazawaf/coraza-playground/internal"
 	"github.com/corazawaf/coraza/v3"
-	"github.com/corazawaf/coraza/v3/rules"
-	"github.com/corazawaf/coraza/v3/types"
-	"github.com/corazawaf/coraza/v3/types/variables"
 )
 
 func main() {
@@ -46,23 +42,5 @@ func validate(_ js.Value, args []js.Value) interface{} {
 		}
 	}
 
-	txState := tx.(rules.TransactionState)
-	collections := make([][4]string, types.VariablesCount)
-	// we transform this into collection, key, index, value
-	for i := variables.RuleVariable(0); i < types.VariablesCount; i++ {
-		v := txState.Collection(variables.RuleVariable(i))
-		for index, md := range v.FindAll() {
-			collections[i] = [4]string{
-				v.Name(),
-				md.Key(),
-				strconv.Itoa(index),
-				md.Value(),
-			}
-		}
-	}
-
-	return map[string]interface{}{
-		"transaction_id": tx.ID(),
-		"collections":    collections,
-	}
+	return internal.BuildResults(tx)
 }
