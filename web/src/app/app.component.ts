@@ -33,7 +33,20 @@ export class AppComponent {
   ];
   coraza_versions = ["v2.0.1", "v3/latest", "v3-tinygo"];
   crs_versions = ["latest"];
+  httpRequest = "test";
 
+  obj = {
+    "request": "",
+    "response": "",
+  }
+
+  public setHttpRequest(evt: string) {
+    this.httpRequest = evt;
+  }
+
+  public run() {
+    alert(this.httpRequest)
+  }
   public updatePhases(option: MatCheckboxChange) {
     for (var i = 0; i < this.phases.length; i++) {
       this.phases[i].value = option.checked;

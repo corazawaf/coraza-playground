@@ -1,6 +1,20 @@
 <mat-tab-group>
-    <mat-tab label="Directives"><app-editor></app-editor></mat-tab>
-    <mat-tab label="Request"><app-editor></app-editor></mat-tab>
-    <mat-tab label="Response"><app-editor></app-editor></mat-tab>
-    <mat-tab label="Response"><app-coraza-response></app-coraza-response></mat-tab>
+    <mat-tab label="First">
+        <ng-template matTabContent>
+            <ngs-code-editor class="editor" 
+            (codeValueChange)="this.httpRequestValue.emit($event)"
+            [codeValue]="this.httpRequest">
+            </ngs-code-editor>
+        </ng-template>
+    </mat-tab>
+    <mat-tab label="Second">
+        <ng-template matTabContent>
+            <app-editor></app-editor>
+        </ng-template>
+    </mat-tab>
+    <mat-tab label="Third">
+        <ng-template matTabContent>
+            <app-editor></app-editor>
+        </ng-template>
+    </mat-tab>
 </mat-tab-group>

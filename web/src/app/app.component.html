@@ -32,7 +32,7 @@
       <span class="title">Coraza Playground</span>
     </div>
     <div class="right-buttons">
-        <button mat-icon-button class="menu-button" aria-label="Example icon-button with menu icon" (click)="drawer.toggle()">
+        <button mat-icon-button class="menu-button" aria-label="Example icon-button with menu icon" (click)="run()">
           <mat-icon>menu</mat-icon>
         </button>
         <button mat-icon-button class="menu-button" aria-label="Example icon-button with menu icon" (click)="drawer.toggle()">
@@ -41,7 +41,7 @@
     </div>    
   </mat-toolbar>
     <!-- rest of the content -->
-    <app-http-editor></app-http-editor>
+    <app-http-editor (httpRequestValue)="setHttpRequest($event)" [httpRequest]="this.httpRequest"></app-http-editor>
   </div>
 
 </mat-drawer-container>

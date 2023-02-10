@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CodeModel } from '@ngstack/code-editor/lib/models/code.model';
 
 @Component({
@@ -7,23 +7,28 @@ import { CodeModel } from '@ngstack/code-editor/lib/models/code.model';
   styleUrls: ['./editor.component.scss']
 })
 export class EditorComponent {
-  
   public theme = 'vs';
 
-  public codeModel: CodeModel = {
-    language: 'json',
-    uri: 'main.json',
-    value: '{}',
+  @Input() codeModel: CodeModel = {
+    language: '',
+    uri: '',
+    value: 'testuru',
   };
+  @Input() codeValue: string = '';
+  @Output() codeValueChange = new EventEmitter<string>();
 
   public options = {
-    contextmenu: true,
+    contextmenu: false,
     minimap: {
-      enabled: true,
+      enabled: false,
     },
   };
 
-  public onCodeChanged(value: any) {
-    console.log('CODE', value);
+  ngOnInit(): void {
+    this.codeModel.value = this.codeValue;
+  }
+
+  public onCodeChanged(value: string) {
+    this.codeValueChange.emit(value);
   }
 }
