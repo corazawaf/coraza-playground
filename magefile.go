@@ -14,7 +14,7 @@ import (
 )
 
 func Build() error {
-	scriptsDir := "./build/scripts"
+	scriptsDir := "./www"
 	if err := os.MkdirAll(scriptsDir, 0700); err != nil {
 		return err
 	}
@@ -23,7 +23,7 @@ func Build() error {
 		return err
 	}
 
-	if err := sh.RunWithV(map[string]string{"GOOS": "js", "GOARCH": "wasm"}, "go", "build", "-o", scriptsDir+"/seclang-validator.wasm", "cmd/seclang-validator/main.go"); err != nil {
+	if err := sh.RunWithV(map[string]string{"GOOS": "js", "GOARCH": "wasm"}, "go", "build", "-o", scriptsDir+"/playground.wasm", "cmd/playground/main.go"); err != nil {
 		return err
 	}
 

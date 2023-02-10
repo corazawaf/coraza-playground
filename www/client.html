@@ -163,7 +163,8 @@
             </div>
         </div>
     </div>
-    <script>
+    <script src="wasm_exec.js"></script>
+    <script>     
         var ua = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0";
         var directives = CodeMirror(document.querySelector("#directives"), {
             value: "{{.Directives}}",
@@ -183,39 +184,9 @@
             mode: "http"
         });
 
-        $('#use_crs').prop("checked", {{.Crs}});
+        $('#use_crs').prop("checked", true);
 
         function run() {
-            $('#loader').show();
-            var obj = getRequest();
-            $.ajax({
-                type: "POST",
-                url: "/results",
-                data: JSON.stringify(obj),
-                complete: function (data) {
-                    $('#loader').hide();
-                    $('#results').html(data.responseText);
-                }
-            });
-        }
-
-        function save(){
-            $('#loader').show();
-            var obj = getRequest();
-            $.ajax({
-                type: "POST",
-                url: "/save",
-                data: JSON.stringify(obj),
-                success: function (data) {
-                    document.location = data;
-                }, error: function(r){
-                    alert("Error!\n" + r.responseText)
-                    $('#loader').hide();
-                }
-            });            
-        }
-
-        function getRequest(){
             var req = http_req.getValue();
             var regex = /Content-length:.*\n/g;
             var content = "";
@@ -227,13 +198,11 @@
                     http_req.setValue(req);
                 }
             } catch (err) { }
-            return {
-                crs: $('#use_crs').prop('checked'),
-                directives: directives.getValue(),
-                request: http_req.getValue(),
-                response: http_res.getValue()
-            };            
+            var crs = $('#use_crs').prop('checked');
+            var result = playground(crs, directives.getValue(), http_req.getValue(), http_res.getValue());
+            console.log(result);
         }
+
 
         function filtercols(ele) {
             var val = ele.value.toLowerCase();
@@ -241,8 +210,11 @@
                 $(this).toggle($(this).text().toLowerCase().indexOf(val) > -1)
             });
         }
-
-        run();
+        const go = new Go();
+        WebAssembly.instantiateStreaming(fetch("playground.wasm"), go.importObject).then((result) => {
+            go.run(result.instance);
+            run();
+        });   
     </script>
 </body>
 
