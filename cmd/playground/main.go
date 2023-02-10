@@ -19,31 +19,31 @@ func main() {
 }
 
 func validate(_ js.Value, args []js.Value) interface{} {
-	_, directives, request, response := args[0].String(), args[1].String(), args[2].String(), args[3].String()
+	directives, request, response := args[0].String(), args[1].String(), args[2].String()
 
 	cfg := coraza.NewWAFConfig().WithDirectives(directives)
 
 	waf, err := coraza.NewWAF(cfg)
 	if err != nil {
-		return map[string]string{
+		return map[string]interface{}{
 			"error": err.Error(),
 		}
 	}
 	tx := waf.NewTransaction()
 	err = requestProcessor(tx, strings.NewReader(request))
 	if err != nil {
-		return map[string]string{
+		return map[string]interface{}{
 			"error": "Error processing request" + err.Error(),
 		}
 	}
 	err = responseProcessor(tx, strings.NewReader(response))
 	if err != nil {
-		return map[string]string{
+		return map[string]interface{}{
 			"error": "Error processing response: " + err.Error(),
 		}
 	}
 
-	return map[string]string{
+	return map[string]interface{}{
 		"id": tx.ID(),
 	}
 }
