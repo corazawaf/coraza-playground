@@ -43,8 +43,15 @@ func validate(_ js.Value, args []js.Value) interface{} {
 		}
 	}
 
+	/*
+		txState := tx.(rules.TransactionState)
+		collections := make([]string, types.VariablesCount)
+		for i := variables.RuleVariable(0); i < types.VariablesCount; i++ {
+			v := txState.Collection(variables.RuleVariable(i))
+		}*/
+
 	return map[string]interface{}{
-		"id": tx.ID(),
+		"transaction_id": tx.ID(),
 	}
 }
 

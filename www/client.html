@@ -157,7 +157,90 @@
                                 <span class="sr-only">Loading...</span>
                             </div>
                         </div>
-                        <div id="results"></div>
+                        <div id="results">
+                            <span style="margin: 0.5vh;">Coraza Response</span>
+                            <ul class="nav nav-tabs">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" href="#menu1">Resume</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#matched">Rules Matched</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#collections">Collections</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#auditlog">Audit Log</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content p-1 overflow-auto" style="height:40vh;">
+                                <div id="menu1" class="tab-pane in active p-1">
+                                    <table class="">
+                                        <tbody>
+                                            <tr>
+                                                <td>Id</td>
+                                                <td id="transaction_id"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Disruptive action</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Disruptive rule</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Rules evaluated</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Rules compiled</td>
+                                                <td>{{ .Transaction.Waf.Rules.Count }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Rules matched</td>
+                                                <td>{{ len .Transaction.MatchedRules }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Compilation Time (us)</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Evaluation Time (us)</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Performance (us)</td>
+                                                <td>{{ .Transaction.GetStopWatch }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="matched" class="tab-pane">
+                                            {{ range $i, $mr := .Transaction.MatchedRules}}
+                                            <strong>{{ $mr.Rule.ID }}:</strong> {{ $mr.Message }}<br>
+                                            {{ end }}
+                                </div>
+                                <div id="collections" class="tab-pane">
+                                    <input class="form-control" placeholder="Type something to apply filters" onkeyup="filtercols(this);">
+                                    <table id="collections" style="width:100%;">
+                                        <thead>
+                                            <tr>
+                                                <th width="25%">Collection</th>
+                                                <th width="25%">Key</th>
+                                                <th width="10%">Index</th>
+                                                <th width="40%">Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="collections_table">
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="auditlog" class="tab-pane">
+                                    {{.AuditLog}}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -186,6 +269,25 @@
 
         $('#use_crs').prop("checked", true);
 
+        function build_collections(collections) {
+            var table = document.getElementById("collections_table");
+            table.innerHTML = "";
+            for (var i = 0; i < collections.length; i++) {
+                var col = collections[i];
+                for (var j = 0; j < col.values.length; j++) {
+                    var row = table.insertRow(-1);
+                    var cell1 = row.insertCell(0);
+                    var cell2 = row.insertCell(1);
+                    var cell3 = row.insertCell(2);
+                    var cell4 = row.insertCell(3);
+                    cell1.innerHTML = col.name;
+                    cell2.innerHTML = col.key;
+                    cell3.innerHTML = j;
+                    cell4.innerHTML = col.values[j];
+                }
+            }
+        }
+
         function run() {
             var req = http_req.getValue();
             var regex = /Content-length:.*\n/g;
@@ -200,7 +302,8 @@
             } catch (err) { }
             var crs = $('#use_crs').prop('checked');
             var result = playground(directives.getValue(), http_req.getValue(), http_res.getValue());
-            console.log(result);
+            $('#transaction_id').text(result.transaction_id);
+            build_collections(result.collections);
         }
 
 
