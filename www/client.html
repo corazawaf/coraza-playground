@@ -302,6 +302,7 @@
             } catch (err) { }
             var crs = $('#use_crs').prop('checked');
             var result = playground(directives.getValue(), http_req.getValue(), http_res.getValue());
+            console.log(result);
             $('#transaction_id').text(result.transaction_id);
             build_collections(result.collections);
         }

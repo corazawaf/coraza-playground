@@ -1,15 +1,15 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
-	"io"
 	"strconv"
 	"strings"
 	"syscall/js"
 
 	"github.com/corazawaf/coraza/v3"
+	"github.com/corazawaf/coraza/v3/rules"
 	"github.com/corazawaf/coraza/v3/types"
+	"github.com/corazawaf/coraza/v3/types/variables"
+	"github.com/jptosso/coraza-playground/internal"
 )
 
 func main() {
@@ -30,120 +30,36 @@ func validate(_ js.Value, args []js.Value) interface{} {
 		}
 	}
 	tx := waf.NewTransaction()
-	err = requestProcessor(tx, strings.NewReader(request))
+	err = internal.RequestProcessor(tx, strings.NewReader(request))
 	if err != nil {
 		return map[string]interface{}{
 			"error": "Error processing request" + err.Error(),
 		}
 	}
-	err = responseProcessor(tx, strings.NewReader(response))
+	err = internal.ResponseProcessor(tx, strings.NewReader(response))
 	if err != nil {
 		return map[string]interface{}{
 			"error": "Error processing response: " + err.Error(),
 		}
 	}
 
-	/*
-		txState := tx.(rules.TransactionState)
-		collections := make([]string, types.VariablesCount)
-		for i := variables.RuleVariable(0); i < types.VariablesCount; i++ {
-			v := txState.Collection(variables.RuleVariable(i))
-		}*/
+	txState := tx.(rules.TransactionState)
+	collections := make([][4]string, types.VariablesCount)
+	// we transform this into collection, key, index, value
+	for i := variables.RuleVariable(0); i < types.VariablesCount; i++ {
+		v := txState.Collection(variables.RuleVariable(i))
+		for index, md := range v.FindAll() {
+			collections[i] = [4]string{
+				v.Name(),
+				md.Key(),
+				strconv.Itoa(index),
+				md.Value(),
+			}
+		}
+	}
 
 	return map[string]interface{}{
 		"transaction_id": tx.ID(),
+		"collections":    collections,
 	}
-}
-
-func requestProcessor(tx types.Transaction, reader io.Reader) error {
-	scanner := bufio.NewScanner(reader)
-	fl := true
-	headers := false
-	body := false
-	bodybuffer := []string{}
-	method := ""
-	url := ""
-	protocol := ""
-	for scanner.Scan() {
-		if fl {
-			spl := strings.SplitN(scanner.Text(), " ", 3)
-			if len(spl) != 3 {
-				return fmt.Errorf("invalid variable count for request header")
-			}
-			method, url, protocol = spl[0], spl[1], spl[2]
-			fl = false
-			headers = true
-		} else if headers {
-			l := scanner.Text()
-			if l == "" {
-				headers = false
-				body = true
-				continue
-			}
-			spl := strings.SplitN(l, ": ", 2)
-			if len(spl) != 2 {
-				return fmt.Errorf("invalid variable count for request header")
-			}
-			tx.AddRequestHeader(spl[0], spl[1])
-		} else if body {
-			bodybuffer = append(bodybuffer, scanner.Text())
-		}
-	}
-	if err := scanner.Err(); err != nil {
-		return err
-	}
-	tx.ProcessURI(url, method, protocol)
-	tx.ProcessRequestHeaders()
-	tx.WriteRequestBody([]byte(strings.Join(bodybuffer, "\r\nr")))
-	tx.ProcessRequestBody()
-
-	return nil
-}
-
-func responseProcessor(tx types.Transaction, reader io.Reader) error {
-	scanner := bufio.NewScanner(reader)
-	fl := true
-	headers := false
-	body := false
-	bodybuffer := []string{}
-	protocol := ""
-	status := ""
-
-	for scanner.Scan() {
-		if fl {
-			spl := strings.SplitN(scanner.Text(), " ", 3)
-			if len(spl) != 3 {
-				return fmt.Errorf("invalid variable count for response header")
-			}
-			protocol, status, _ = spl[0], spl[1], spl[2]
-			fl = false
-			headers = true
-		} else if headers {
-			l := scanner.Text()
-			if l == "" {
-				headers = false
-				body = true
-				continue
-			}
-			spl := strings.SplitN(l, ":", 2)
-			if len(spl) != 2 {
-				return fmt.Errorf("invalid response header")
-			}
-			key, value := spl[0], spl[1]
-			value = strings.TrimSpace(value)
-			tx.AddResponseHeader(key, value)
-		} else if body {
-			bodybuffer = append(bodybuffer, scanner.Text())
-		}
-	}
-	if err := scanner.Err(); err != nil {
-		return err
-	}
-
-	bf := strings.Join(bodybuffer, "\r\n")
-	tx.WriteResponseBody([]byte(bf))
-	st, _ := strconv.Atoi(status)
-	tx.ProcessResponseHeaders(st, protocol)
-	tx.ProcessResponseBody()
-	return nil
 }
