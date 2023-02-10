@@ -1,11 +1,21 @@
+// Copyright 2022 The OWASP Coraza contributors
+// SPDX-License-Identifier: Apache-2.0
+
 package main
 
 import (
 	"strings"
 	"syscall/js"
 
+	"github.com/corazawaf/coraza-playground/internal"
 	"github.com/corazawaf/coraza/v3"
+<<<<<<< HEAD
 	"github.com/jptosso/coraza-playground/internal"
+=======
+	"github.com/corazawaf/coraza/v3/rules"
+	"github.com/corazawaf/coraza/v3/types"
+	"github.com/corazawaf/coraza/v3/types/variables"
+>>>>>>> refs/remotes/origin/adds_wasm_script
 )
 
 func main() {
