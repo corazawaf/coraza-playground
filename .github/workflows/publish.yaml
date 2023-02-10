@@ -1,0 +1,34 @@
+---
+name: Pages Build
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  GO_VERSION: 1.19
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Build
+        run: |
+          go run mage.go build
+          echo 'playground.coraza.io' > ./www/CNAME
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./www

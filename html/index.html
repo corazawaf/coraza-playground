@@ -105,7 +105,7 @@
                 <a class="nav-link" href="#" onclick="save();"><i class="fas fa-share"></i> Share</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="https://github.com/jptosso/coraza-waf" target="_blank"><i
+                <a class="nav-link" href="https://github.com/corazawaf/coraza" target="_blank"><i
                         class="fab fa-github"></i> Github</a>
             </li>
             <li class="nav-item">
@@ -152,70 +152,138 @@
                         </div>
                     </div>
                     <div class="sb-card" style="padding: 0px;">
-                        <div class="" style="margin-top: 10%;margin-left:20%;position:fixed;" id="loader">
-                            <div class="spinner-border" role="status">
-                                <span class="sr-only">Loading...</span>
+                        <div id="results">
+                            <span style="margin: 0.5vh;">Coraza Response</span>
+                            <ul class="nav nav-tabs">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" href="#menu1">Resume</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#matched">Rules Matched</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#collections">Collections</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#auditlog">Audit Log</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content p-1 overflow-auto" style="height:40vh;">
+                                <div id="menu1" class="tab-pane in active p-1">
+                                    <table class="">
+                                        <tbody>
+                                            <tr>
+                                                <td>Id</td>
+                                                <td id="transaction_id"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Disruptive action</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Disruptive rule</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Rules evaluated</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Rules compiled</td>
+                                                <td>{{ .Transaction.Waf.Rules.Count }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Rules matched</td>
+                                                <td>{{ len .Transaction.MatchedRules }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Compilation Time (us)</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Evaluation Time (us)</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Performance (us)</td>
+                                                <td>{{ .Transaction.GetStopWatch }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="matched" class="tab-pane">
+                                            {{ range $i, $mr := .Transaction.MatchedRules}}
+                                            <strong>{{ $mr.Rule.ID }}:</strong> {{ $mr.Message }}<br>
+                                            {{ end }}
+                                </div>
+                                <div id="collections" class="tab-pane">
+                                    <input class="form-control" placeholder="Type something to apply filters" onkeyup="filtercols(this);">
+                                    <table id="collections_table" style="width:100%;">
+                                        <thead>
+                                            <tr>
+                                                <th width="25%">Collection</th>
+                                                <th width="25%">Key</th>
+                                                <th width="10%">Index</th>
+                                                <th width="40%">Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="auditlog" class="tab-pane">
+                                    {{.AuditLog}}
+                                </div>
                             </div>
                         </div>
-                        <div id="results"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <script>
+    <script src="wasm_exec.js"></script>
+    <script>     
         var ua = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0";
         var directives = CodeMirror(document.querySelector("#directives"), {
-            value: "{{.Directives}}",
+            value: "",
             theme: "ayu-dark",
             mode: "none"
         });
 
         var http_req = CodeMirror(document.querySelector("#httprequest"), {
-            value: "{{.Request}}",
+            value: "",
             theme: "ayu-dark",
             mode: "http"
         });
 
         var http_res = CodeMirror(document.querySelector("#httpresponse"), {
-            value: "{{.Response}}",
+            value: "",
             theme: "ayu-dark",
             mode: "http"
         });
 
-        $('#use_crs').prop("checked", {{.Crs}});
+        $('#use_crs').prop("checked", true);
+
+        function build_collections(collections) {
+            var table = document.getElementById("collections_table");
+            // collections_table is a table, we have to insert the table into the tbody
+            var tbody = table.getElementsByTagName("tbody")[0];
+            tbody.innerHTML = "";
+            for (var i = 0; i < collections.length; i++) {
+                var collection = collections[i];
+                var tr = document.createElement("tr");
+                var td = document.createElement("td");
+                for(var j = 0; j < collection.length; j++) {
+                    var col = collection[j];
+                    var td = document.createElement("td");
+                    td.appendChild(document.createTextNode(col));
+                    tr.appendChild(td);
+                }
+                tbody.appendChild(tr);
+            }
+        }
 
         function run() {
-            $('#loader').show();
-            var obj = getRequest();
-            $.ajax({
-                type: "POST",
-                url: "/results",
-                data: JSON.stringify(obj),
-                complete: function (data) {
-                    $('#loader').hide();
-                    $('#results').html(data.responseText);
-                }
-            });
-        }
-
-        function save(){
-            $('#loader').show();
-            var obj = getRequest();
-            $.ajax({
-                type: "POST",
-                url: "/save",
-                data: JSON.stringify(obj),
-                success: function (data) {
-                    document.location = data;
-                }, error: function(r){
-                    alert("Error!\n" + r.responseText)
-                    $('#loader').hide();
-                }
-            });            
-        }
-
-        function getRequest(){
             var req = http_req.getValue();
             var regex = /Content-length:.*\n/g;
             var content = "";
@@ -227,13 +295,14 @@
                     http_req.setValue(req);
                 }
             } catch (err) { }
-            return {
-                crs: $('#use_crs').prop('checked'),
-                directives: directives.getValue(),
-                request: http_req.getValue(),
-                response: http_res.getValue()
-            };            
+            var crs = $('#use_crs').prop('checked');
+            var result = playground(directives.getValue(), http_req.getValue(), http_res.getValue());
+            console.log(result);
+            $('#transaction_id').text(result.transaction_id);
+            var collections = JSON.parse(result.collections);
+            build_collections(collections);
         }
+
 
         function filtercols(ele) {
             var val = ele.value.toLowerCase();
@@ -241,8 +310,11 @@
                 $(this).toggle($(this).text().toLowerCase().indexOf(val) > -1)
             });
         }
-
-        run();
+        const go = new Go();
+        WebAssembly.instantiateStreaming(fetch("playground.wasm"), go.importObject).then((result) => {
+            go.run(result.instance);
+            run();
+        });   
     </script>
 </body>
 
