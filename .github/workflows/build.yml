@@ -25,7 +25,7 @@ jobs:
 
       - name: Build
         run: |
-          go run mage.go
+          go run mage.go build
           echo 'playground.coraza.io' > ./www/CNAME
 
       - name: Deploy
