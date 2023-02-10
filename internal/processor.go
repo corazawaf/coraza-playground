@@ -5,6 +5,7 @@ package internal
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"io"
 	"strconv"
@@ -110,7 +111,7 @@ func ResponseProcessor(tx types.Transaction, reader io.Reader) error {
 
 func BuildResults(tx types.Transaction) map[string]interface{} {
 	txState := tx.(rules.TransactionState)
-	collections := make([][4]string, 0)
+	collections := make([][]string, 0)
 	// we transform this into collection, key, index, value
 	for i := variables.RuleVariable(1); i < types.VariablesCount; i++ {
 		v := txState.Collection(variables.RuleVariable(i))
@@ -119,7 +120,7 @@ func BuildResults(tx types.Transaction) map[string]interface{} {
 			continue
 		}
 		for index, md := range v.FindAll() {
-			collections = append(collections, [4]string{
+			collections = append(collections, []string{
 				v.Name(),
 				md.Key(),
 				strconv.Itoa(index),
@@ -127,9 +128,12 @@ func BuildResults(tx types.Transaction) map[string]interface{} {
 			})
 		}
 	}
-
+	jsdata, err := json.Marshal(collections)
+	if err != nil {
+		fmt.Printf("Error marshaling %s\n", err)
+	}
 	return map[string]interface{}{
 		"transaction_id": tx.ID(),
-		"collections":    collections,
+		"collections":    string(jsdata),
 	}
 }

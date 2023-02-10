@@ -59,7 +59,7 @@ func TestBuildResults(t *testing.T) {
 	if results["id"] == "" {
 		t.Error("id is empty")
 	}
-	if r := results["collections"].([][4]string)[0][0]; r != "RESPONSE_CONTENT_TYPE" {
+	if r := results["collections"].([][]string)[0][0]; r != "RESPONSE_CONTENT_TYPE" {
 		t.Error("unexpected value for RESPONSE_CONTENT_TYPE, got: " + r)
 		fmt.Println(results)
 	}
