@@ -28,3 +28,5 @@ jobs:
           cache: true
       - name: Tests
         run: go run mage.go test
+      - name: Build
+        run: go run mage.go build
