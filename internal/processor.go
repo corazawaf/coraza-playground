@@ -7,7 +7,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/corazawaf/coraza/v3/rules"
 	"github.com/corazawaf/coraza/v3/types"
+	"github.com/corazawaf/coraza/v3/types/variables"
 )
 
 func RequestProcessor(tx types.Transaction, reader io.Reader) error {
@@ -101,4 +103,30 @@ func ResponseProcessor(tx types.Transaction, reader io.Reader) error {
 	tx.ProcessResponseHeaders(st, protocol)
 	tx.ProcessResponseBody()
 	return nil
+}
+
+func BuildResults(tx types.Transaction) map[string]interface{} {
+	txState := tx.(rules.TransactionState)
+	collections := make([][4]string, 0)
+	// we transform this into collection, key, index, value
+	for i := variables.RuleVariable(1); i < types.VariablesCount; i++ {
+		v := txState.Collection(variables.RuleVariable(i))
+		if v == nil {
+			fmt.Printf("Error nil %d\n", i)
+			continue
+		}
+		for index, md := range v.FindAll() {
+			collections = append(collections, [4]string{
+				v.Name(),
+				md.Key(),
+				strconv.Itoa(index),
+				md.Value(),
+			})
+		}
+	}
+
+	return map[string]interface{}{
+		"transaction_id": tx.ID(),
+		"collections":    collections,
+	}
 }
