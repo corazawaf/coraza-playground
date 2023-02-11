@@ -25,7 +25,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.61.1/mode/http/http.min.js"
         integrity="sha512-1TbXvXWYOJTHAG0mDVITR1ZrzT+WI/bjwbMI1CeJ23OUVA8ysHN+c1hHrzkyDgvjk4wdj+lPdhyyydVn6MNK+g=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <link rel="stylesheet" href="public/client.css" />
+    <script src="https://codemirror.net/5/addon/display/placeholder.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/json2html/2.1.0/json2html.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
         integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
@@ -49,7 +49,8 @@
         .top-menu {
             width: 100%;
             height: 5vh;
-            min-height: 40px; /* TODO check */
+            min-height: 40px;
+            /* TODO check */
             border-bottom: 1px solid #cfd0d1;
         }
 
@@ -60,6 +61,14 @@
             border-bottom: 1px solid #cfd0d1;
             margin: 0px !important;
             padding: 0.5vh;
+        }
+
+        .sb-card span.view-format {
+            font-size: 80%;
+        }
+
+        .sb-card span.view-format a {
+            color: #0693e3;
         }
 
         .CodeMirror {
@@ -91,6 +100,10 @@
         /* Handle on hover */
         ::-webkit-scrollbar-thumb:hover {
             background: #555;
+        }
+
+        .CodeMirror pre.CodeMirror-placeholder {
+            color: #999;
         }
     </style>
 </head>
@@ -140,14 +153,18 @@
                         </div>
                     </div>
                     <div class="sb-card">
-                        HTTP Request
+                        HTTP Request <span class="view-format">(<a target="_blank"
+                                href="https://www.rfc-editor.org/rfc/rfc9110.html#name-example-message-exchange">view
+                                format</a>)</span>
                         <div id="httprequest">
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="sb-card">
-                        HTTP Response
+                        HTTP Response <span class="view-format">(<a target="_blank"
+                                href="https://www.rfc-editor.org/rfc/rfc9110.html#name-example-message-exchange">view
+                                format</a>)</span>
                         <div id="httpresponse">
                         </div>
                     </div>
@@ -212,12 +229,13 @@
                                     </table>
                                 </div>
                                 <div id="matched" class="tab-pane">
-                                            {{ range $i, $mr := .Transaction.MatchedRules}}
-                                            <strong>{{ $mr.Rule.ID }}:</strong> {{ $mr.Message }}<br>
-                                            {{ end }}
+                                    {{ range $i, $mr := .Transaction.MatchedRules}}
+                                    <strong>{{ $mr.Rule.ID }}:</strong> {{ $mr.Message }}<br>
+                                    {{ end }}
                                 </div>
                                 <div id="collections" class="tab-pane">
-                                    <input class="form-control" placeholder="Type something to apply filters" onkeyup="filtercols(this);">
+                                    <input class="form-control" placeholder="Type something to apply filters"
+                                        onkeyup="filtercols(this);">
                                     <table id="collections_table" style="width:100%;">
                                         <thead>
                                             <tr>
@@ -242,24 +260,27 @@
         </div>
     </div>
     <script src="wasm_exec.js"></script>
-    <script>     
+    <script>
         var ua = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0";
         var directives = CodeMirror(document.querySelector("#directives"), {
             value: "",
             theme: "ayu-dark",
-            mode: "none"
+            mode: "none",
+            placeholder: "Insert rules here e.g. SecRuleEngine ON"
         });
 
         var http_req = CodeMirror(document.querySelector("#httprequest"), {
             value: "",
             theme: "ayu-dark",
-            mode: "http"
+            mode: "http",
+            placeholder: "Insert raw request message"
         });
 
         var http_res = CodeMirror(document.querySelector("#httpresponse"), {
             value: "",
             theme: "ayu-dark",
-            mode: "http"
+            mode: "http",
+            placeholder: "Insert raw response message"
         });
 
         $('#use_crs').prop("checked", true);
@@ -273,7 +294,7 @@
                 var collection = collections[i];
                 var tr = document.createElement("tr");
                 var td = document.createElement("td");
-                for(var j = 0; j < collection.length; j++) {
+                for (var j = 0; j < collection.length; j++) {
                     var col = collection[j];
                     var td = document.createElement("td");
                     td.appendChild(document.createTextNode(col));
