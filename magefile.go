@@ -9,6 +9,7 @@ package main
 import (
 	"go/build"
 	"os"
+	"path"
 
 	"github.com/magefile/mage/sh"
 )
@@ -23,9 +24,16 @@ func Build() error {
 	if err := sh.RunV("cp", build.Default.GOROOT+"/misc/wasm/wasm_exec.js", targetDir); err != nil {
 		return err
 	}
-
-	if err := sh.RunV("cp", "./html/index.html", targetDir); err != nil {
-		return err
+	files := []string{
+		"index.html",
+		"app.css",
+		// "favicon.ico",
+		"app.js",
+	}
+	for _, file := range files {
+		if err := sh.RunV("cp", path.Join(".", "public", file), targetDir); err != nil {
+			return err
+		}
 	}
 
 	if err := sh.RunWithV(map[string]string{"GOOS": "js", "GOARCH": "wasm"}, "go", "build", "-o", targetDir+"/playground.wasm", "cmd/playground/main.go"); err != nil {
