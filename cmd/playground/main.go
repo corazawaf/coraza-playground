@@ -1,12 +1,14 @@
-// Copyright 2022 The OWASP Coraza contributors
+// Copyright 2023 Juan Pablo Tosso and the OWASP Coraza contributors
 // SPDX-License-Identifier: Apache-2.0
 
 package main
 
 import (
+	"fmt"
 	"strings"
 	"syscall/js"
 
+	coreruleset "github.com/corazawaf/coraza-coreruleset"
 	"github.com/corazawaf/coraza-playground/internal"
 	"github.com/corazawaf/coraza/v3"
 )
@@ -18,9 +20,19 @@ func main() {
 }
 
 func validate(_ js.Value, args []js.Value) interface{} {
-	directives, request, response := args[0].String(), args[1].String(), args[2].String()
+	directives, request, response, crs := args[0].String(), args[1].String(), args[2].String(), args[3].Bool()
 
-	cfg := coraza.NewWAFConfig().WithDirectives(directives)
+	cfg := coraza.NewWAFConfig().
+		WithRootFS(coreruleset.FS)
+	if crs {
+		cfg = cfg.WithDirectives("Include @crs-setup.conf.example")
+	}
+	cfg = cfg.WithDirectives(directives)
+	if crs {
+		fmt.Println("Loading CRS")
+		cfg = cfg.WithDirectives("Include @coraza.conf-recommended").
+			WithDirectives("Include @owasp_crs/*.conf")
+	}
 
 	waf, err := coraza.NewWAF(cfg)
 	if err != nil {
