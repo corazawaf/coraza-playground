@@ -7,11 +7,11 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"github.com/corazawaf/coraza/v3/collection"
 	"io"
 	"strconv"
 	"strings"
 
+	"github.com/corazawaf/coraza/v3/collection"
 	"github.com/corazawaf/coraza/v3/rules"
 	"github.com/corazawaf/coraza/v3/types"
 	"github.com/corazawaf/coraza/v3/types/variables"
