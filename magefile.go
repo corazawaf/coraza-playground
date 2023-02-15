@@ -36,7 +36,7 @@ func Build() error {
 		}
 	}
 
-	if err := sh.RunWithV(map[string]string{"GOOS": "js", "GOARCH": "wasm"}, "go", "build", "-o", targetDir+"/playground.wasm", "cmd/playground/main.go"); err != nil {
+	if err := sh.RunWithV(map[string]string{"GOOS": "js", "GOARCH": "wasm"}, "go", "build", "-o", targetDir+"/playground.wasm", "-tags=no_fs_access", "cmd/playground/main.go"); err != nil {
 		return err
 	}
 

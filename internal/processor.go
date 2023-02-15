@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/corazawaf/coraza/v3/collection"
 	"github.com/corazawaf/coraza/v3/rules"
 	"github.com/corazawaf/coraza/v3/types"
 	"github.com/corazawaf/coraza/v3/types/variables"
@@ -113,12 +114,7 @@ func BuildResults(tx types.Transaction) map[string]interface{} {
 	txState := tx.(rules.TransactionState)
 	collections := make([][]string, 0)
 	// we transform this into collection, key, index, value
-	for i := variables.RuleVariable(1); i < types.VariablesCount; i++ {
-		v := txState.Collection(variables.RuleVariable(i))
-		if v == nil {
-			fmt.Printf("Error nil %d\n", i)
-			continue
-		}
+	txState.Variables().All(func(_ variables.RuleVariable, v collection.Collection) bool {
 		for index, md := range v.FindAll() {
 			collections = append(collections, []string{
 				v.Name(),
@@ -127,7 +123,8 @@ func BuildResults(tx types.Transaction) map[string]interface{} {
 				md.Value(),
 			})
 		}
-	}
+		return true
+	})
 	jsdata, err := json.Marshal(collections)
 	if err != nil {
 		fmt.Printf("Error marshaling %s\n", err)
