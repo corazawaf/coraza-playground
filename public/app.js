@@ -78,11 +78,7 @@ function filtercols(ele) {
 }
 const go = new Go();
 WebAssembly.instantiateStreaming(fetch("playground.wasm"), go.importObject).then((result) => {
-    var d = window.localStorage.getItem("directives");
-    if (d) {
-        directives.setValue(d);
-
-        
+    var d = window.localStorage.getItem("directives");        
     http_req.setValue(window.localStorage.getItem("httprequest") || "");
     http_res.setValue(window.localStorage.getItem("httpresponse") || "");
     go.run(result.instance);
