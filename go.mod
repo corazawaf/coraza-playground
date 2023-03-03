@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/corazawaf/coraza-coreruleset v0.0.0-20230212223519-aaa77d68bc35
-	github.com/corazawaf/coraza/v3 v3.0.0-20230215072219-4a6e4d202072
+	github.com/corazawaf/coraza/v3 v3.0.0-20230303111946-801a1d6be115
 	github.com/magefile/mage v1.14.0
 )
 
@@ -14,5 +14,5 @@ require (
 	github.com/tidwall/gjson v1.14.4 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
-	golang.org/x/net v0.6.0 // indirect
+	golang.org/x/net v0.7.0 // indirect
 )
