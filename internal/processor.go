@@ -1,4 +1,4 @@
-// Copyright 2023 Juan Pablo Tosso and the OWASP Coraza contributors
+// Copyright 2023 The OWASP Coraza contributors
 // SPDX-License-Identifier: Apache-2.0
 
 package internal
@@ -12,7 +12,7 @@ import (
 	"strings"
 
 	"github.com/corazawaf/coraza/v3/collection"
-	"github.com/corazawaf/coraza/v3/rules"
+	"github.com/corazawaf/coraza/v3/experimental/plugins/plugintypes"
 	"github.com/corazawaf/coraza/v3/types"
 	"github.com/corazawaf/coraza/v3/types/variables"
 )
@@ -56,8 +56,12 @@ func RequestProcessor(tx types.Transaction, reader io.Reader) error {
 	}
 	tx.ProcessURI(url, method, protocol)
 	tx.ProcessRequestHeaders()
-	tx.WriteRequestBody([]byte(strings.Join(bodybuffer, "\r\nr")))
-	tx.ProcessRequestBody()
+	if _, _, err := tx.WriteRequestBody([]byte(strings.Join(bodybuffer, "\r\nr"))); err != nil {
+		return err
+	}
+	if _, err := tx.ProcessRequestBody(); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -103,15 +107,19 @@ func ResponseProcessor(tx types.Transaction, reader io.Reader) error {
 	}
 
 	bf := strings.Join(bodybuffer, "\r\n")
-	tx.WriteResponseBody([]byte(bf))
+	if _, _, err := tx.WriteResponseBody([]byte(bf)); err != nil {
+		return err
+	}
 	st, _ := strconv.Atoi(status)
 	tx.ProcessResponseHeaders(st, protocol)
-	tx.ProcessResponseBody()
+	if _, err := tx.ProcessResponseBody(); err != nil {
+		return err
+	}
 	return nil
 }
 
 func BuildResults(tx types.Transaction) map[string]interface{} {
-	txState := tx.(rules.TransactionState)
+	txState := tx.(plugintypes.TransactionState)
 	collections := make([][]string, 0)
 	// we transform this into collection, key, index, value
 	txState.Variables().All(func(_ variables.RuleVariable, v collection.Collection) bool {

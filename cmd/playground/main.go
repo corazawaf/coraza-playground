@@ -1,4 +1,4 @@
-// Copyright 2023 Juan Pablo Tosso and the OWASP Coraza contributors
+// Copyright 2023 The OWASP Coraza contributors
 // SPDX-License-Identifier: Apache-2.0
 
 package main
@@ -6,7 +6,7 @@ package main
 import (
 	"fmt"
 	"strings"
-	"syscall/js"
+	"syscall/js" //nolint:all
 
 	coreruleset "github.com/corazawaf/coraza-coreruleset"
 	"github.com/corazawaf/coraza-playground/internal"
