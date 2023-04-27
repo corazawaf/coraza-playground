@@ -1,12 +1,15 @@
 // Copyright 2023 The OWASP Coraza contributors
 // SPDX-License-Identifier: Apache-2.0
 
+//go:build js && wasm
+// +build js,wasm
+
 package main
 
 import (
 	"fmt"
 	"strings"
-	"syscall/js" //nolint:all
+	"syscall/js"
 
 	coreruleset "github.com/corazawaf/coraza-coreruleset"
 	"github.com/corazawaf/coraza-playground/internal"
