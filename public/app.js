@@ -1,3 +1,8 @@
+/**
+ * Copyright 2023 The OWASP Coraza contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 var ua = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0";
 var directives = CodeMirror(document.querySelector("#directives"), {
     value: "",

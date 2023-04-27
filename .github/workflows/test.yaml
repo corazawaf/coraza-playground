@@ -26,6 +26,8 @@ jobs:
         with:
           go-version: ${{ env.GO_VERSION }}
           cache: true
+      - name: Lint
+        run: go run mage.go lint
       - name: Tests
         run: go run mage.go test
       - name: Build
