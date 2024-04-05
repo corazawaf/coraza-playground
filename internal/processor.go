@@ -56,7 +56,7 @@ func RequestProcessor(tx types.Transaction, reader io.Reader) error {
 	}
 	tx.ProcessURI(url, method, protocol)
 	tx.ProcessRequestHeaders()
-	if _, _, err := tx.WriteRequestBody([]byte(strings.Join(bodybuffer, "\r\nr"))); err != nil {
+	if _, _, err := tx.WriteRequestBody([]byte(strings.Join(bodybuffer, "\r\n"))); err != nil {
 		return err
 	}
 	if _, err := tx.ProcessRequestBody(); err != nil {
