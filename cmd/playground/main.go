@@ -11,7 +11,7 @@ import (
 	"strings"
 	"syscall/js"
 
-	coreruleset "github.com/corazawaf/coraza-coreruleset"
+	coreruleset "github.com/corazawaf/coraza-coreruleset/v4"
 	"github.com/corazawaf/coraza-playground/internal"
 	"github.com/corazawaf/coraza/v3"
 )
