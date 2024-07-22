@@ -1,6 +1,6 @@
 module github.com/corazawaf/coraza-playground
 
-go 1.20
+go 1.21
 
 require (
 	github.com/corazawaf/coraza-coreruleset/v4 v4.3.0
