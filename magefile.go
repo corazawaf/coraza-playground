@@ -19,7 +19,7 @@ import (
 
 const targetDir = "./www"
 
-var golangCILintVer = "v1.48.0"
+var golangCILintVer = "v1.59.1"
 var addLicenseVersion = "v1.1.1" // https://github.com/google/addlicense/releases
 var gosImportsVer = "v0.3.7"     // https://github.com/rinchsan/gosimports/releases
 var errRunGoModTidy = errors.New("go.mod/sum not formatted, commit changes")
