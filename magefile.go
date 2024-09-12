@@ -68,7 +68,6 @@ func Build() error {
 		return err
 	}
 
-	fmt.Println(sh.OutCmd("ls", "-la", build.Default.GOROOT))
 	if err := sh.RunV("cp", build.Default.GOROOT+"/misc/wasm/wasm_exec.js", targetDir); err != nil {
 		return err
 	}
