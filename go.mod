@@ -1,12 +1,10 @@
 module github.com/corazawaf/coraza-playground
 
-go 1.22
-
-toolchain go1.23.0
+go 1.21
 
 require (
 	github.com/corazawaf/coraza-coreruleset/v4 v4.3.0
-	github.com/corazawaf/coraza/v3 v3.2.2-0.20240908223052-c987dd12e645
+	github.com/corazawaf/coraza/v3 v3.2.2-0.20240826121127-94d1dc59513b
 	github.com/magefile/mage v1.15.0
 )
 
