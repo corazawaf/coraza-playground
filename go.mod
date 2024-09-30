@@ -5,7 +5,7 @@ go 1.22.3
 toolchain go1.22.7
 
 require (
-	github.com/corazawaf/coraza-coreruleset/v4 v4.3.0
+	github.com/corazawaf/coraza-coreruleset/v4 v4.5.0
 	github.com/corazawaf/coraza/v3 v3.2.2-0.20240927223105-3904ccc32e60
 	github.com/magefile/mage v1.15.0
 )
