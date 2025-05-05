@@ -4,6 +4,6 @@
     "local>corazawaf/renovate-config"
   ],
   "constraints": {
-    "go": "1.22"
+    "go": "1.23"
   }
 }
