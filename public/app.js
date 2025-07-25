@@ -22,6 +22,19 @@ var http_res = CodeMirror(document.querySelector("#httpresponse"), {
     mode: "http"
 });
 
+var auditlog_editor = CodeMirror(document.querySelector("#auditlog-editor"), {
+    value: "No audit log data available",
+    theme: "ayu-dark",
+    mode: {name: "javascript", json: true},
+    readOnly: true,
+    lineNumbers: true,
+    foldGutter: true,
+    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+    lineWrapping: true,
+    indentUnit: 2,
+    smartIndent: true
+});
+
 // Initialize UI
 $(document).ready(function() {
     $('#use_crs').prop("checked", true);
@@ -50,11 +63,13 @@ function refreshCodeMirrorInstances() {
         directives.refresh();
         http_req.refresh();
         http_res.refresh();
+        auditlog_editor.refresh();
         
         // Force a size recalculation
         directives.setSize(null, null);
         http_req.setSize(null, null);
         http_res.setSize(null, null);
+        auditlog_editor.setSize(null, null);
     }, 50);
 }
 
@@ -312,8 +327,19 @@ function updateResults(result) {
             build_table(document.getElementById("matched_data_table"), customRules);
             build_table(document.getElementById("crs_data_table"), crsRules);
             
-            // Update audit log
-            $('#auditlog').text(audit_log);
+                            // Update audit log with formatted JSON
+        try {
+            if (audit_log && audit_log !== 'No audit log data available') {
+                const auditObj = JSON.parse(audit_log);
+                const formattedAudit = JSON.stringify(auditObj, null, 2);
+                auditlog_editor.setValue(formattedAudit);
+            } else {
+                auditlog_editor.setValue('No audit log data available');
+            }
+        } catch (error) {
+            console.error('Error parsing audit log:', error);
+            auditlog_editor.setValue(audit_log || 'Error parsing audit log');
+        }
             
             // Show status badge
             $('#status-badge').show().text('Complete');
@@ -417,7 +443,7 @@ function clearAll() {
         $('#engine_status').text('Ready');
         $('#rules-count').text('0');
         $('#crs-rules-count').text('0');
-        $('#auditlog').text('No audit log data available');
+        auditlog_editor.setValue('No audit log data available');
         $('#status-badge').hide();
         
         // Clear tables

@@ -45,6 +45,15 @@ func validate(_ js.Value, args []js.Value) interface{} {
 			WithDirectives("Include @owasp_crs/*.conf")
 	}
 
+	// Enable audit logging for the playground
+	auditDirectives := `
+		SecAuditEngine RelevantOnly
+		SecAuditLogFormat JSON
+		SecAuditLogType Serial
+	`
+	fmt.Println("Adding audit logging configuration...")
+	cfg = cfg.WithDirectives(auditDirectives)
+
 	if directives != "" {
 		fmt.Println("Adding custom directives...")
 		cfg = cfg.WithDirectives(directives)

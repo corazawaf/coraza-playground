@@ -260,6 +260,91 @@ func BuildResults(tx types.Transaction, durationMicros int64, engineStatus strin
 		}
 	}
 
+	// Try to get audit log data
+	fmt.Printf("=== BUILDING AUDIT LOG ===\n")
+
+	// Create a comprehensive audit log structure
+	auditData := map[string]interface{}{
+		"transaction": map[string]interface{}{
+			"id":            tx.ID(),
+			"timestamp":     fmt.Sprintf("%d", durationMicros), // Using duration as timestamp placeholder
+			"client_ip":     "playground",
+			"server_id":     "coraza-playground",
+			"engine_status": actualEngineStatus,
+		},
+		"request": map[string]interface{}{
+			"method":  "extracted from processing",
+			"uri":     "extracted from processing",
+			"headers": []map[string]string{},
+			"body":    "",
+		},
+		"response": map[string]interface{}{
+			"status":  200,
+			"headers": []map[string]string{},
+			"body":    "",
+		},
+		"rules": map[string]interface{}{
+			"matched_count": len(tx.MatchedRules()),
+			"matched_rules": []map[string]interface{}{},
+		},
+		"messages": []map[string]interface{}{},
+	}
+
+	// Add matched rules to audit log
+	for _, matchedRule := range tx.MatchedRules() {
+		rule := matchedRule.Rule()
+		ruleData := map[string]interface{}{
+			"id":      rule.ID(),
+			"phase":   rule.Phase(),
+			"message": matchedRule.Message(),
+			"data":    matchedRule.Data(),
+			"tags":    rule.Tags(),
+		}
+
+		if rule.SecMark() != "" {
+			ruleData["secmark"] = rule.SecMark()
+		}
+
+		auditData["rules"].(map[string]interface{})["matched_rules"] = append(
+			auditData["rules"].(map[string]interface{})["matched_rules"].([]map[string]interface{}),
+			ruleData,
+		)
+
+		// Also add as message
+		messageData := map[string]interface{}{
+			"rule_id":  rule.ID(),
+			"message":  matchedRule.Message(),
+			"data":     matchedRule.Data(),
+			"severity": "NOTICE",
+		}
+		auditData["messages"] = append(auditData["messages"].([]map[string]interface{}), messageData)
+	}
+
+	// Try to extract some variables for more context
+	txState.Variables().All(func(_ variables.RuleVariable, v collection.Collection) bool {
+		switch v.Name() {
+		case "REQUEST_METHOD":
+			if entries := v.FindAll(); len(entries) > 0 {
+				auditData["request"].(map[string]interface{})["method"] = entries[0].Value()
+			}
+		case "REQUEST_URI":
+			if entries := v.FindAll(); len(entries) > 0 {
+				auditData["request"].(map[string]interface{})["uri"] = entries[0].Value()
+			}
+		}
+		return true
+	})
+
+	auditJSON, err := json.Marshal(auditData)
+	var auditLogString string
+	if err != nil {
+		fmt.Printf("Error marshaling audit log: %s\n", err)
+		auditLogString = `{"error": "Failed to generate audit log"}`
+	} else {
+		auditLogString = string(auditJSON)
+	}
+	fmt.Printf("Generated audit log (%d bytes)\n", len(auditLogString))
+
 	// Check for interruption and provide detailed information
 	disruptiveAction := "none"
 	disruptiveRule := "-"
@@ -270,6 +355,18 @@ func BuildResults(tx types.Transaction, durationMicros int64, engineStatus strin
 		disruptiveRule = strconv.Itoa(it.RuleID)
 		disruptiveStatus = it.Status
 		fmt.Printf("FINAL INTERRUPTION DETECTED: Action=%s, RuleID=%d, Status=%d\n", it.Action, it.RuleID, it.Status)
+
+		// Add interruption to audit log
+		auditData["interruption"] = map[string]interface{}{
+			"action":  it.Action,
+			"rule_id": it.RuleID,
+			"status":  it.Status,
+		}
+
+		// Re-marshal with interruption data
+		if updatedAuditJSON, marshalErr := json.Marshal(auditData); marshalErr == nil {
+			auditLogString = string(updatedAuditJSON)
+		}
 	} else {
 		fmt.Printf("NO INTERRUPTION DETECTED despite %d matched rules\n", len(tx.MatchedRules()))
 		// Check engine state
@@ -281,7 +378,7 @@ func BuildResults(tx types.Transaction, durationMicros int64, engineStatus strin
 		"collections":         string(jsdata),
 		"matched_data":        string(matchedData),
 		"rules_matched_total": strconv.Itoa(len(tx.MatchedRules())),
-		"audit_log":           `{"error": "not implemented"}`,
+		"audit_log":           auditLogString,
 		"disruptive_action":   disruptiveAction,
 		"disruptive_rule":     disruptiveRule,
 		"disruptive_status":   disruptiveStatus,

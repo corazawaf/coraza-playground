@@ -651,3 +651,19 @@ button:focus,
         opacity: 0.5;
     }
 }
+
+/* Audit log specific styling */
+.audit-log-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.audit-log-container .editor-container {
+    flex: 1;
+    min-height: 400px;
+}
+
+.audit-log-container .panel-header {
+    flex-shrink: 0;
+}
