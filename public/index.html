@@ -31,6 +31,8 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/ayu-dark.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/ayu-light.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/http/http.min.js"
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     
@@ -119,6 +121,18 @@
                                    data-bs-placement="right" 
                                    title="Enable OWASP Core Rule Set for comprehensive protection"></i>
                             </label>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label small mb-2 theme-label">
+                                <i class="fas fa-palette me-1"></i>
+                                Theme
+                            </label>
+                            <select class="form-select form-select-sm" id="theme-selector">
+                                <option value="auto">Auto (System)</option>
+                                <option value="light">Light</option>
+                                <option value="dark">Dark</option>
+                            </select>
                         </div>
                     </div>
 

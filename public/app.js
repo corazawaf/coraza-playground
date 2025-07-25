@@ -35,6 +35,57 @@ var auditlog_editor = CodeMirror(document.querySelector("#auditlog-editor"), {
     smartIndent: true
 });
 
+// Theme management
+function getSystemTheme() {
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+}
+
+function getCodeMirrorTheme(effectiveTheme) {
+    return effectiveTheme === 'light' ? 'ayu-light' : 'ayu-dark';
+}
+
+function getEffectiveTheme(theme) {
+    if (theme === 'auto') {
+        return getSystemTheme();
+    }
+    return theme;
+}
+
+function applyTheme(theme) {
+    const effectiveTheme = getEffectiveTheme(theme);
+    const root = document.documentElement;
+    
+    // Set theme attribute
+    root.setAttribute('data-theme', theme);
+    
+    // Update CodeMirror themes
+    const cmTheme = getCodeMirrorTheme(effectiveTheme);
+    directives.setOption('theme', cmTheme);
+    http_req.setOption('theme', cmTheme);
+    http_res.setOption('theme', cmTheme);
+    auditlog_editor.setOption('theme', cmTheme);
+    
+    // Refresh CodeMirror instances
+    setTimeout(refreshCodeMirrorInstances, 50);
+    
+    // Save preference
+    localStorage.setItem('theme', theme);
+}
+
+function initializeTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'auto';
+    $('#theme-selector').val(savedTheme);
+    applyTheme(savedTheme);
+    
+    // Listen for system theme changes when in auto mode
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function() {
+        const currentTheme = $('#theme-selector').val();
+        if (currentTheme === 'auto') {
+            applyTheme('auto');
+        }
+    });
+}
+
 // Initialize UI
 $(document).ready(function() {
     $('#use_crs').prop("checked", true);
@@ -43,6 +94,15 @@ $(document).ready(function() {
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Initialize theme
+    initializeTheme();
+    
+    // Theme selector change handler
+    $('#theme-selector').on('change', function() {
+        const selectedTheme = $(this).val();
+        applyTheme(selectedTheme);
     });
     
     // Load saved state
@@ -451,6 +511,10 @@ function clearAll() {
         $('#matched_data_table tbody').html('<tr class="no-data"><td colspan="2" class="text-center text-muted py-4"><i class="fas fa-info-circle me-2"></i>No custom rules matched. Run an analysis to see results.</td></tr>');
         $('#crs_data_table tbody').html('<tr class="no-data"><td colspan="2" class="text-center text-muted py-4"><i class="fas fa-shield-alt me-2"></i>No CRS rules matched. Run an analysis to see results.</td></tr>');
         
+        // Reset theme to auto
+        $('#theme-selector').val('auto');
+        applyTheme('auto');
+        
         // Clear localStorage
         try {
             window.localStorage.removeItem("directives");
@@ -458,6 +522,7 @@ function clearAll() {
             window.localStorage.removeItem("httpresponse");
             window.localStorage.removeItem("use_crs");
             window.localStorage.removeItem("auto_content_length");
+            window.localStorage.removeItem("theme");
         } catch (error) {
             console.warn('Could not clear localStorage:', error);
         }
