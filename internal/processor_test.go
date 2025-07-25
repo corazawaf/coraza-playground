@@ -55,7 +55,7 @@ func TestBuildResults(t *testing.T) {
 	if err := RequestProcessor(tx, strings.NewReader(request)); err != nil {
 		t.Error(err)
 	}
-	results := BuildResults(tx)
+	results := BuildResults(tx, 1000, "DetectionOnly") // Use 1000 microseconds as test duration and DetectionOnly engine
 	if results["id"] == "" {
 		t.Error("id is empty")
 	}
