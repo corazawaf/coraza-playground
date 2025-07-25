@@ -54,14 +54,48 @@ func RequestProcessor(tx types.Transaction, reader io.Reader) error {
 	if err := scanner.Err(); err != nil {
 		return err
 	}
+	fmt.Printf("=== REQUEST PROCESSING START ===\n")
+	fmt.Printf("Processing URI: %s %s %s\n", method, url, protocol)
+
 	tx.ProcessURI(url, method, protocol)
+	fmt.Printf("Phase 1 (URI): Matched rules so far: %d\n", len(tx.MatchedRules()))
+
+	// Check for interruption after URI processing (Phase 1)
+	if it := tx.Interruption(); it != nil {
+		fmt.Printf("INTERRUPTION after URI processing: Action=%s, RuleID=%d, Status=%d\n", it.Action, it.RuleID, it.Status)
+		// Continue processing to capture full collections data
+	}
+
+	fmt.Printf("Processing request headers...\n")
 	tx.ProcessRequestHeaders()
-	if _, _, err := tx.WriteRequestBody([]byte(strings.Join(bodybuffer, "\r\n"))); err != nil {
+	fmt.Printf("Phase 1 (Headers): Matched rules so far: %d\n", len(tx.MatchedRules()))
+
+	// Check for interruption after header processing (Phase 1)
+	if it := tx.Interruption(); it != nil {
+		fmt.Printf("INTERRUPTION after header processing: Action=%s, RuleID=%d, Status=%d\n", it.Action, it.RuleID, it.Status)
+		// Continue processing to capture full collections data
+	}
+
+	bodyData := []byte(strings.Join(bodybuffer, "\r\n"))
+	fmt.Printf("Processing request body (%d bytes): %s\n", len(bodyData), string(bodyData))
+
+	if _, _, err := tx.WriteRequestBody(bodyData); err != nil {
 		return err
 	}
-	if _, err := tx.ProcessRequestBody(); err != nil {
+
+	it, err := tx.ProcessRequestBody()
+	if err != nil {
 		return err
 	}
+	fmt.Printf("Phase 2 (Request Body): Matched rules so far: %d\n", len(tx.MatchedRules()))
+
+	// Check for interruption after request body processing (Phase 2)
+	if it != nil {
+		fmt.Printf("INTERRUPTION after request body processing: Action=%s, RuleID=%d, Status=%d\n", it.Action, it.RuleID, it.Status)
+		// Continue processing to capture full collections data
+	}
+
+	fmt.Printf("=== REQUEST PROCESSING END ===\n")
 
 	return nil
 }
@@ -110,20 +144,51 @@ func ResponseProcessor(tx types.Transaction, reader io.Reader) error {
 	if _, _, err := tx.WriteResponseBody([]byte(bf)); err != nil {
 		return err
 	}
+
+	fmt.Printf("=== RESPONSE PROCESSING START ===\n")
+	fmt.Printf("Response status: %s\n", status)
+
 	st, _ := strconv.Atoi(status)
 	tx.ProcessResponseHeaders(st, protocol)
+	fmt.Printf("Phase 3 (Response Headers): Matched rules so far: %d\n", len(tx.MatchedRules()))
+
+	// Check for interruption after response header processing (Phase 3)
+	if it := tx.Interruption(); it != nil {
+		fmt.Printf("INTERRUPTION after response header processing: Action=%s, RuleID=%d, Status=%d\n", it.Action, it.RuleID, it.Status)
+		// Continue processing to capture full collections data
+	}
+
+	fmt.Printf("Processing response body (%d bytes): %s\n", len(bf), bf)
 	if _, err := tx.ProcessResponseBody(); err != nil {
 		return err
 	}
+	fmt.Printf("Phase 4 (Response Body): Matched rules so far: %d\n", len(tx.MatchedRules()))
+
+	// Check for interruption after response body processing (Phase 4)
+	if it := tx.Interruption(); it != nil {
+		fmt.Printf("INTERRUPTION after response body processing: Action=%s, RuleID=%d, Status=%d\n", it.Action, it.RuleID, it.Status)
+		// Continue processing to capture full collections data
+	}
+
+	fmt.Printf("=== RESPONSE PROCESSING END ===\n")
+
 	return nil
 }
 
-func BuildResults(tx types.Transaction) map[string]interface{} {
+func BuildResults(tx types.Transaction, durationMicros int64, engineStatus string) map[string]interface{} {
+	fmt.Printf("=== BUILDING COLLECTIONS FIRST ===\n")
+
+	// Build collections BEFORE closing transaction to preserve state
 	txState := tx.(plugintypes.TransactionState)
 	collections := make([][]string, 0)
+
 	// we transform this into collection, key, index, value
 	txState.Variables().All(func(_ variables.RuleVariable, v collection.Collection) bool {
-		for index, md := range v.FindAll() {
+		collectionEntries := v.FindAll()
+		if len(collectionEntries) > 0 {
+			fmt.Printf("Collection '%s': %d entries\n", v.Name(), len(collectionEntries))
+		}
+		for index, md := range collectionEntries {
 			collections = append(collections, []string{
 				v.Name(),
 				md.Key(),
@@ -133,6 +198,28 @@ func BuildResults(tx types.Transaction) map[string]interface{} {
 		}
 		return true
 	})
+	fmt.Printf("Total collections entries: %d\n", len(collections))
+
+	fmt.Printf("=== FINALIZING TRANSACTION ===\n")
+
+	// Use the provided engine status
+	actualEngineStatus := engineStatus
+	fmt.Printf("Engine Status: %s\n", actualEngineStatus)
+
+	// Close the transaction to trigger final processing (after collecting data)
+	closeErr := tx.Close()
+	if closeErr != nil {
+		fmt.Printf("Error closing transaction: %s\n", closeErr.Error())
+	} else {
+		fmt.Printf("Transaction closed successfully\n")
+	}
+
+	// Check for interruption immediately after closing
+	if it := tx.Interruption(); it != nil {
+		fmt.Printf("INTERRUPTION FOUND AFTER TRANSACTION CLOSE: Action=%s, RuleID=%d, Status=%d\n", it.Action, it.RuleID, it.Status)
+	} else {
+		fmt.Printf("No interruption found after transaction close\n")
+	}
 	jsdata, err := json.Marshal(collections)
 	if err != nil {
 		fmt.Printf("Error marshaling %s\n", err)
@@ -141,7 +228,7 @@ func BuildResults(tx types.Transaction) map[string]interface{} {
 	for _, m := range tx.MatchedRules() {
 		msg := m.Message()
 		if msg == "" {
-			continue
+			msg = "Rule matched (no message specified)"
 		}
 		md = append(md, []string{strconv.Itoa(m.Rule().ID()), msg})
 	}
@@ -149,19 +236,154 @@ func BuildResults(tx types.Transaction) map[string]interface{} {
 	if err != nil {
 		fmt.Printf("Error marshaling %s\n", err)
 	}
+	fmt.Printf("=== BUILDING RESULTS ===\n")
+	fmt.Printf("Total matched rules: %d\n", len(tx.MatchedRules()))
+
+	// Log detailed information about each matched rule
+	for i, matchedRule := range tx.MatchedRules() {
+		rule := matchedRule.Rule()
+		fmt.Printf("Matched Rule #%d:\n", i+1)
+		fmt.Printf("  ID: %d\n", rule.ID())
+		fmt.Printf("  Phase: %d\n", rule.Phase())
+		fmt.Printf("  Message: '%s'\n", matchedRule.Message())
+		fmt.Printf("  Data: '%s'\n", matchedRule.Data())
+
+		// Try to get action information (if available)
+		fmt.Printf("  Rule type/actions: (checking for disruptive behavior)\n")
+
+		// Try to get more information about the rule
+		if rule.SecMark() != "" {
+			fmt.Printf("  SecMark: %s\n", rule.SecMark())
+		}
+		if len(rule.Tags()) > 0 {
+			fmt.Printf("  Tags: %v\n", rule.Tags())
+		}
+	}
+
+	// Try to get audit log data
+	fmt.Printf("=== BUILDING AUDIT LOG ===\n")
+
+	// Create a comprehensive audit log structure
+	auditData := map[string]interface{}{
+		"transaction": map[string]interface{}{
+			"id":            tx.ID(),
+			"timestamp":     fmt.Sprintf("%d", durationMicros), // Using duration as timestamp placeholder
+			"client_ip":     "playground",
+			"server_id":     "coraza-playground",
+			"engine_status": actualEngineStatus,
+		},
+		"request": map[string]interface{}{
+			"method":  "extracted from processing",
+			"uri":     "extracted from processing",
+			"headers": []map[string]string{},
+			"body":    "",
+		},
+		"response": map[string]interface{}{
+			"status":  200,
+			"headers": []map[string]string{},
+			"body":    "",
+		},
+		"rules": map[string]interface{}{
+			"matched_count": len(tx.MatchedRules()),
+			"matched_rules": []map[string]interface{}{},
+		},
+		"messages": []map[string]interface{}{},
+	}
+
+	// Add matched rules to audit log
+	for _, matchedRule := range tx.MatchedRules() {
+		rule := matchedRule.Rule()
+		ruleData := map[string]interface{}{
+			"id":      rule.ID(),
+			"phase":   rule.Phase(),
+			"message": matchedRule.Message(),
+			"data":    matchedRule.Data(),
+			"tags":    rule.Tags(),
+		}
+
+		if rule.SecMark() != "" {
+			ruleData["secmark"] = rule.SecMark()
+		}
+
+		auditData["rules"].(map[string]interface{})["matched_rules"] = append(
+			auditData["rules"].(map[string]interface{})["matched_rules"].([]map[string]interface{}),
+			ruleData,
+		)
+
+		// Also add as message
+		messageData := map[string]interface{}{
+			"rule_id":  rule.ID(),
+			"message":  matchedRule.Message(),
+			"data":     matchedRule.Data(),
+			"severity": "NOTICE",
+		}
+		auditData["messages"] = append(auditData["messages"].([]map[string]interface{}), messageData)
+	}
+
+	// Try to extract some variables for more context
+	txState.Variables().All(func(_ variables.RuleVariable, v collection.Collection) bool {
+		switch v.Name() {
+		case "REQUEST_METHOD":
+			if entries := v.FindAll(); len(entries) > 0 {
+				auditData["request"].(map[string]interface{})["method"] = entries[0].Value()
+			}
+		case "REQUEST_URI":
+			if entries := v.FindAll(); len(entries) > 0 {
+				auditData["request"].(map[string]interface{})["uri"] = entries[0].Value()
+			}
+		}
+		return true
+	})
+
+	auditJSON, err := json.Marshal(auditData)
+	var auditLogString string
+	if err != nil {
+		fmt.Printf("Error marshaling audit log: %s\n", err)
+		auditLogString = `{"error": "Failed to generate audit log"}`
+	} else {
+		auditLogString = string(auditJSON)
+	}
+	fmt.Printf("Generated audit log (%d bytes)\n", len(auditLogString))
+
+	// Check for interruption and provide detailed information
+	disruptiveAction := "none"
+	disruptiveRule := "-"
+	disruptiveStatus := 0
+
+	if it := tx.Interruption(); it != nil {
+		disruptiveAction = it.Action
+		disruptiveRule = strconv.Itoa(it.RuleID)
+		disruptiveStatus = it.Status
+		fmt.Printf("FINAL INTERRUPTION DETECTED: Action=%s, RuleID=%d, Status=%d\n", it.Action, it.RuleID, it.Status)
+
+		// Add interruption to audit log
+		auditData["interruption"] = map[string]interface{}{
+			"action":  it.Action,
+			"rule_id": it.RuleID,
+			"status":  it.Status,
+		}
+
+		// Re-marshal with interruption data
+		if updatedAuditJSON, marshalErr := json.Marshal(auditData); marshalErr == nil {
+			auditLogString = string(updatedAuditJSON)
+		}
+	} else {
+		fmt.Printf("NO INTERRUPTION DETECTED despite %d matched rules\n", len(tx.MatchedRules()))
+		// Check engine state
+		fmt.Printf("Transaction ID: %s\n", tx.ID())
+	}
+
 	result := map[string]interface{}{
 		"transaction_id":      tx.ID(),
 		"collections":         string(jsdata),
 		"matched_data":        string(matchedData),
 		"rules_matched_total": strconv.Itoa(len(tx.MatchedRules())),
-		"audit_log":           `{"error": "not implemented"}`,
-		"disruptive_action":   "none",
-		"disruptive_rule":     "-",
-		"duration":            0,
-	}
-	if it := tx.Interruption(); it != nil {
-		result["disruptive_action"] = it.Action
-		result["disruptive_rule"] = it.RuleID
+		"audit_log":           auditLogString,
+		"disruptive_action":   disruptiveAction,
+		"disruptive_rule":     disruptiveRule,
+		"disruptive_status":   disruptiveStatus,
+		"duration":            durationMicros,
+		"engine_status":       actualEngineStatus,
 	}
 	return result
 }

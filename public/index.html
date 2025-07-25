@@ -4,172 +4,389 @@
  SPDX-License-Identifier: Apache-2.0
 -->
 
-<html>
+<html lang="en">
 
 <head>
-    <title>Coraza WAF Sandbox</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
-        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coraza WAF Playground</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.js"
-        integrity="sha512-8RnEqURPUc5aqFEN04aQEiPlSAdE0jlFS/9iGgUyNtwFnSKCXhmB6ZTNl7LnDtDWKabJIASzXrzD0K+LYexU9g=="
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    
+    <!-- CodeMirror 6 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css"
-        integrity="sha512-uf06llspW44/LZpHzHT6qBOIVODjWtv4MxCricRxkzvopAlSWnTf6hpZTFxuuZcuNE9CBQhqE0Seu1CoRk84nQ=="
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/keymap/sublime.min.js"
-        integrity="sha512-SV3qeFFtzcmGtUQPLM7HLy/7GKJ/x3c2PdiF5GZQnbHzIlI2q7r77y0IgLLbBDeHiNfCSBYDQt898Xp0tcZOeA=="
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/keymap/sublime.min.js"
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/theme/ayu-dark.min.css"
-        integrity="sha512-mV3RUXi1gt22jDb4UyRBFhZVFgAIiOfRE6ul+2l1Hcj6glyg6x4xlnjPH+neGm/t6XrFmsMRu4++McQu0asjqg=="
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/ayu-dark.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/http/http.min.js"
-        integrity="sha512-ko126qQFbKcm6gq2VhnDX2dovcTnPYiHgfXRqULc+FhoeiZq5fah/l6v9HOMh5Z1R1nrDQG8oo8bJL3kLrHcnw=="
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/ayu-light.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/http/http.min.js"
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <link rel="stylesheet" href="app.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/json2html/3.2.0/json2html.min.js"></script>
+    
+    <!-- CodeMirror JavaScript mode for JSON highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
         integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     
+    <!-- JSON2HTML -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/json2html/3.2.0/json2html.min.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="app.css" />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <div class="top-menu">
-        <ul class="nav">
-            <li class="nav-item">
-                <a class="nav-link" href="#" onclick="run();"><i class="fas fa-play"></i> Run</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#" onclick="save();"><i class="fas fa-share"></i> Share</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="https://github.com/corazawaf/coraza" target="_blank"><i
-                        class="fab fa-github"></i> Github</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="https://www.coraza.io/docs" target="_blank"><i
-                        class="fas fa-question-circle"></i> Documentation</a>
-            </li>
-        </ul>
-    </div>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-2 left-bar">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                    <label class="form-check-label" for="defaultCheck1">
-                        Auto Content Length
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="use_crs">
-                    <label class="form-check-label" for="defaultCheck3">
-                        Use CRS (latest) <a href="#" style="padding-left:1vh;"><i
-                                class="fas fa-question-circle"></i></a>
-                    </label>
-                </div>
-                <!--Evaluate phases-->
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="loading-overlay">
+        <div class="spinner-container">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
             </div>
-            <div class="col-md-10">
-                <div class="row">
-                    <div class="sb-card">
-                        Directives
-                        <div id="directives">
+            <div class="mt-3 text-light">Initializing Coraza WAF...</div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <i class="fas fa-shield-alt text-primary me-2"></i>
+                <span class="fw-bold">Coraza WAF</span>
+                <span class="badge bg-primary ms-2">Playground</span>
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                <button class="btn btn-primary btn-sm me-2" onclick="run();" id="run-btn">
+                    <i class="fas fa-play me-1"></i> Run Analysis
+                </button>
+                <button class="btn btn-outline-light btn-sm me-2" onclick="save();">
+                    <i class="fas fa-share me-1"></i> Share
+                </button>
+                <button class="btn btn-outline-light btn-sm me-2" onclick="clearAll();">
+                    <i class="fas fa-trash me-1"></i> Clear
+                </button>
+                <a class="btn btn-outline-light btn-sm me-2" href="https://github.com/corazawaf/coraza" target="_blank">
+                    <i class="fab fa-github me-1"></i> GitHub
+                </a>
+                <a class="btn btn-outline-light btn-sm" href="https://www.coraza.io/docs" target="_blank">
+                    <i class="fas fa-book me-1"></i> Docs
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid h-100">
+        <div class="row h-100">
+            <!-- Sidebar -->
+            <div class="col-xl-2 col-lg-3 sidebar p-0">
+                <div class="sidebar-content p-4">
+                    <div class="mb-4">
+                        <h6 class="sidebar-heading">Configuration</h6>
+                        
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="defaultCheck1">
+                            <label class="form-check-label" for="defaultCheck1">
+                                Auto Content Length
+                            </label>
+                        </div>
+                        
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="use_crs">
+                            <label class="form-check-label" for="use_crs">
+                                Use CRS (latest)
+                                <i class="fas fa-info-circle text-muted ms-1" 
+                                   data-bs-toggle="tooltip" 
+                                   data-bs-placement="right" 
+                                   title="Enable OWASP Core Rule Set for comprehensive protection"></i>
+                            </label>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label small mb-2 theme-label">
+                                <i class="fas fa-palette me-1"></i>
+                                Theme
+                            </label>
+                            <select class="form-select form-select-sm" id="theme-selector">
+                                <option value="auto">Auto (System)</option>
+                                <option value="light">Light</option>
+                                <option value="dark">Dark</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="sb-card">
-                        HTTP Request
-                        <div id="httprequest">
+
+                    <div class="mb-4">
+                        <h6 class="sidebar-heading">Quick Actions</h6>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary btn-sm" onclick="loadExample();">
+                                <i class="fas fa-code me-1"></i> Load Example
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="exportResults();">
+                                <i class="fas fa-download me-1"></i> Export Results
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="stats-panel">
+                        <h6 class="sidebar-heading">Statistics</h6>
+                        <div class="stat-item">
+                            <span class="stat-label">Last Analysis</span>
+                            <span class="stat-value" id="last-analysis">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Rules Matched</span>
+                            <span class="stat-value" id="sidebar-rules-matched">0</span>
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="sb-card">
-                        HTTP Response
-                        <div id="httpresponse">
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-xl-10 col-lg-9 main-content p-0">
+                <div class="content-grid">
+                    <!-- Directives Panel -->
+                    <div class="editor-panel">
+                        <div class="panel-header">
+                            <h5 class="panel-title">
+                                <i class="fas fa-cog text-primary me-2"></i>
+                                WAF Directives
+                            </h5>
+                            <div class="panel-actions">
+                                <button class="btn btn-sm btn-outline-light" onclick="formatDirectives();">
+                                    <i class="fas fa-magic"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="editor-container">
+                            <div id="directives"></div>
                         </div>
                     </div>
-                    <div class="sb-card" style="padding: 0px;">
-                        <div id="results">
-                            <span style="margin: 0.5vh;">Coraza Response</span>
-                            <ul class="nav nav-tabs">
-                                <li class="nav-item">
-                                    <a class="nav-link active" data-toggle="tab" href="#menu1">Resume</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#matched">Rules Matched</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#collections">Collections</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#auditlog">Audit Log</a>
-                                </li>
-                            </ul>
-                            <div class="tab-content p-1 overflow-auto" style="height:40vh;">
-                                <div id="menu1" class="tab-pane in active p-1">
-                                    <table class="">
-                                        <tbody>
+
+                    <!-- HTTP Request Panel -->
+                    <div class="editor-panel">
+                        <div class="panel-header">
+                            <h5 class="panel-title">
+                                <i class="fas fa-arrow-right text-success me-2"></i>
+                                HTTP Request
+                            </h5>
+                            <div class="panel-actions">
+                                <button class="btn btn-sm btn-outline-light" onclick="formatRequest();">
+                                    <i class="fas fa-magic"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="editor-container">
+                            <div id="httprequest"></div>
+                        </div>
+                    </div>
+
+                    <!-- HTTP Response Panel -->
+                    <div class="editor-panel">
+                        <div class="panel-header">
+                            <h5 class="panel-title">
+                                <i class="fas fa-arrow-left text-warning me-2"></i>
+                                HTTP Response
+                            </h5>
+                            <div class="panel-actions">
+                                <button class="btn btn-sm btn-outline-light" onclick="formatResponse();">
+                                    <i class="fas fa-magic"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="editor-container">
+                            <div id="httpresponse"></div>
+                        </div>
+                    </div>
+
+                    <!-- Results Panel -->
+                    <div class="results-panel">
+                        <div class="panel-header">
+                            <h5 class="panel-title">
+                                <i class="fas fa-analytics text-info me-2"></i>
+                                Analysis Results
+                            </h5>
+                            <div class="panel-actions">
+                                <span class="badge bg-success" id="status-badge" style="display: none;">Ready</span>
+                            </div>
+                        </div>
+                        
+                        <nav class="results-nav">
+                                                         <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                <button class="nav-link active" id="nav-overview-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#nav-overview" type="button" role="tab">
+                                    <i class="fas fa-chart-line me-1"></i> Overview
+                                </button>
+                                <button class="nav-link" id="nav-rules-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#nav-rules" type="button" role="tab">
+                                    <i class="fas fa-exclamation-triangle me-1"></i> 
+                                    Custom Rules <span class="badge bg-danger ms-1" id="rules-count">0</span>
+                                </button>
+                                <button class="nav-link" id="nav-crs-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#nav-crs" type="button" role="tab">
+                                    <i class="fas fa-shield-alt me-1"></i> 
+                                    CRS Rules <span class="badge bg-info ms-1" id="crs-rules-count">0</span>
+                                </button>
+                                <button class="nav-link" id="nav-collections-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#nav-collections" type="button" role="tab">
+                                    <i class="fas fa-database me-1"></i> Collections
+                                </button>
+                                <button class="nav-link" id="nav-audit-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#nav-audit" type="button" role="tab">
+                                    <i class="fas fa-file-alt me-1"></i> Audit Log
+                                </button>
+                            </div>
+                        </nav>
+                        
+                        <div class="tab-content results-content" id="nav-tabContent">
+                            <!-- Overview Tab -->
+                            <div class="tab-pane fade show active" id="nav-overview" role="tabpanel">
+                                <div class="overview-grid">
+                                    <div class="metric-card">
+                                        <div class="metric-icon">
+                                            <i class="fas fa-fingerprint"></i>
+                                        </div>
+                                        <div class="metric-content">
+                                            <div class="metric-label">Transaction ID</div>
+                                            <div class="metric-value" id="transaction_id">-</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="metric-card">
+                                        <div class="metric-icon text-danger">
+                                            <i class="fas fa-ban"></i>
+                                        </div>
+                                        <div class="metric-content">
+                                            <div class="metric-label">Disruptive Action</div>
+                                            <div class="metric-value" id="disruptive_action">none</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="metric-card">
+                                        <div class="metric-icon text-warning">
+                                            <i class="fas fa-shield-alt"></i>
+                                        </div>
+                                        <div class="metric-content">
+                                            <div class="metric-label">Disruptive Rule</div>
+                                            <div class="metric-value" id="disruptive_rule">-</div>
+                                        </div>
+                                    </div>
+                                    
+                                                                         <div class="metric-card">
+                                         <div class="metric-icon text-success">
+                                             <i class="fas fa-code"></i>
+                                         </div>
+                                         <div class="metric-content">
+                                             <div class="metric-label">Custom Rules</div>
+                                             <div class="metric-value" id="rules_matched_total">0</div>
+                                         </div>
+                                     </div>
+                                     
+                                     <div class="metric-card">
+                                         <div class="metric-icon text-info">
+                                             <i class="fas fa-shield-alt"></i>
+                                         </div>
+                                         <div class="metric-content">
+                                             <div class="metric-label">CRS Rules</div>
+                                             <div class="metric-value" id="crs_rules_total">0</div>
+                                         </div>
+                                     </div>
+                                    
+                                    <div class="metric-card">
+                                        <div class="metric-icon text-info">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <div class="metric-content">
+                                            <div class="metric-label">Evaluation Time</div>
+                                            <div class="metric-value" id="duration">0 μs</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="metric-card">
+                                        <div class="metric-icon text-secondary">
+                                            <i class="fas fa-cogs"></i>
+                                        </div>
+                                        <div class="metric-content">
+                                            <div class="metric-label">Engine Status</div>
+                                            <div class="metric-value" id="engine_status">Ready</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Custom Rules Tab -->
+                            <div class="tab-pane fade" id="nav-rules" role="tabpanel">
+                                <div class="table-responsive">
+                                    <table class="table table-dark table-hover" id="matched_data_table">
+                                        <thead class="table-dark">
                                             <tr>
-                                                <td>Id</td>
-                                                <td id="transaction_id"></td>
+                                                <th width="15%">Rule ID</th>
+                                                <th width="85%">Message</th>
                                             </tr>
-                                            <tr>
-                                                <td>Disruptive action</td>
-                                                <td id="disruptive_action"></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Disruptive rule</td>
-                                                <td id="disruptive_rule"></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Rules evaluated</td>
-                                                <td></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Rules compiled</td>
-                                                <td>Not Available</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Rules matched</td>
-                                                <td id="rules_matched_total"></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Compilation Time (us)</td>
-                                                <td></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Evaluation Time (us)</td>
-                                                <td id="duration"></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Performance (us)</td>
-                                                <td>Not Available</td>
-                                            </tr>
-                                        </tbody>
+                                        </thead>
+                                                                                 <tbody>
+                                             <tr class="no-data">
+                                                 <td colspan="2" class="text-center text-muted py-4">
+                                                     <i class="fas fa-info-circle me-2"></i>
+                                                     No custom rules matched. Run an analysis to see results.
+                                                 </td>
+                                             </tr>
+                                         </tbody>
                                     </table>
                                 </div>
-                                <div id="matched" class="tab-pane">
-                                    <table id="matched_data_table" style="width:100%;">
-                                        <thead>
+                            </div>
+                            
+                            <!-- CRS Rules Tab -->
+                            <div class="tab-pane fade" id="nav-crs" role="tabpanel">
+                                <div class="table-responsive">
+                                    <table class="table table-dark table-hover" id="crs_data_table">
+                                        <thead class="table-dark">
                                             <tr>
-                                                <th width="20%">ID</th>
-                                                <th width="80%">Message</th>
+                                                <th width="15%">Rule ID</th>
+                                                <th width="85%">Message</th>
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            <tr class="no-data">
+                                                <td colspan="2" class="text-center text-muted py-4">
+                                                    <i class="fas fa-shield-alt me-2"></i>
+                                                    No CRS rules matched. Run an analysis to see results.
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
-                                <div id="collections" class="tab-pane">
-                                    <input class="form-control" placeholder="Type something to apply filters" onkeyup="filtercols(this);">
-                                    <table id="collections_table" style="width:100%;">
-                                        <thead>
+                            </div>
+                            
+                            <!-- Collections Tab -->
+                            <div class="tab-pane fade" id="nav-collections" role="tabpanel">
+                                <div class="collections-header mb-3">
+                                    <input class="form-control" placeholder="Filter collections..." 
+                                           onkeyup="filtercols(this);" id="collections-filter">
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-dark table-hover table-sm" id="collections_table">
+                                        <thead class="table-dark">
                                             <tr>
                                                 <th width="25%">Collection</th>
                                                 <th width="25%">Key</th>
@@ -178,11 +395,29 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            <tr class="no-data">
+                                                <td colspan="4" class="text-center text-muted py-4">
+                                                    <i class="fas fa-database me-2"></i>
+                                                    No collections data. Run an analysis to populate.
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
-                                <div id="auditlog" class="tab-pane">
-                                    {{.AuditLog}}
+                            </div>
+                            
+                            <!-- Audit Log Tab -->
+                            <div class="tab-pane fade" id="nav-audit" role="tabpanel">
+                                <div class="audit-log-container">
+                                    <div class="panel-header">
+                                        <h6 class="panel-title">
+                                            <i class="fas fa-file-alt me-2"></i>
+                                            Audit Log (JSON)
+                                        </h6>
+                                    </div>
+                                    <div class="editor-container">
+                                        <div id="auditlog-editor"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -191,6 +426,35 @@
             </div>
         </div>
     </div>
+
+    <!-- Success Toast -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="success-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-success text-white">
+                <i class="fas fa-check-circle me-2"></i>
+                <strong class="me-auto">Success</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="success-message">
+                Analysis completed successfully!
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Toast -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="error-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-danger text-white">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong class="me-auto">Error</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="error-message">
+                An error occurred during analysis.
+            </div>
+        </div>
+    </div>
+
     <script src="/wasm_exec.js"></script>
     <script src="/app.js"></script>
 </body>
