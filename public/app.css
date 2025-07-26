@@ -442,6 +442,65 @@ h1, h2, h3, h4, h5, h6 {
     vertical-align: middle;
 }
 
+/* Light theme table adjustments */
+[data-theme="light"] .table-dark,
+:root[data-theme="auto"] .table-dark {
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .table-dark th,
+:root[data-theme="auto"] .table-dark th {
+    color: var(--text-secondary);
+    background: var(--bg-glass);
+}
+
+[data-theme="light"] .table-dark td,
+:root[data-theme="auto"] .table-dark td {
+    color: var(--text-primary);
+    border-top: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .no-data td,
+:root[data-theme="auto"] .no-data td {
+    color: var(--text-muted) !important;
+}
+
+/* Auto theme for light preference */
+@media (prefers-color-scheme: light) {
+    :root[data-theme="auto"] .table-dark,
+    :root[data-theme="auto"] .table-dark th,
+    :root[data-theme="auto"] .table-dark td {
+        color: var(--text-primary);
+    }
+    
+    :root[data-theme="auto"] .table-dark th {
+        color: var(--text-secondary);
+    }
+    
+    :root[data-theme="auto"] .no-data td {
+        color: var(--text-muted) !important;
+    }
+}
+
+/* Badge adjustments for all themes */
+.badge {
+    font-weight: 500;
+}
+
+.badge.bg-danger {
+    color: #ffffff !important;
+}
+
+.badge.bg-info {
+    color: #ffffff !important;
+}
+
+/* Ensure good contrast for badges in tables */
+.table .badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
 .table-hover tbody tr:hover {
     background: var(--bg-glass) !important;
 }
