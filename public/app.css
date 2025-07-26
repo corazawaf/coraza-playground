@@ -720,3 +720,47 @@ button:focus,
 .audit-log-container .panel-header {
     flex-shrink: 0;
 }
+
+/* SecLang syntax highlighting for ayu-dark theme */
+.cm-s-ayu-dark .cm-keyword {
+    color: #ffb454;
+    font-weight: bold;
+}
+
+.cm-s-ayu-dark .cm-variable {
+    color: #39bae6;
+}
+
+.cm-s-ayu-dark .cm-operator {
+    color: #f29668;
+}
+
+.cm-s-ayu-dark .cm-builtin {
+    color: #c2d94c;
+}
+
+.cm-s-ayu-dark .cm-atom {
+    color: #ffee99;
+}
+
+/* SecLang syntax highlighting for ayu-light theme */
+.cm-s-ayu-light .cm-keyword {
+    color: #fa8d3e;
+    font-weight: bold;
+}
+
+.cm-s-ayu-light .cm-variable {
+    color: #399ee6;
+}
+
+.cm-s-ayu-light .cm-operator {
+    color: #f2590c;
+}
+
+.cm-s-ayu-light .cm-builtin {
+    color: #86b300;
+}
+
+.cm-s-ayu-light .cm-atom {
+    color: #a37acc;
+}
