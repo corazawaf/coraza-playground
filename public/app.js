@@ -540,7 +540,8 @@ function clearAll() {
 function loadExample() {
     const exampleDirectives = `# Example WAF Configuration
 
-SecRuleEngine On # change this to DetectionOnly if you want to see all rules matched
+# Change SecRuleEngine to DetectionOnly if you want to see all rules matched
+SecRuleEngine On
 SecRequestBodyAccess On
 SecResponseBodyAccess On
 
