@@ -1,0 +1,20 @@
+{
+  "name": "coraza-playground",
+  "version": "1.0.0",
+  "description": "Coraza WAF Playground with SecLang syntax highlighting",
+  "private": true,
+  "scripts": {
+    "build-grammar": "lezer-generator grammar/seclang.grammar -o public/seclang-parser.js",
+    "build": "npm run build-grammar",
+    "dev": "npm run build-grammar && mage run"
+  },
+  "devDependencies": {
+    "@lezer/generator": "^1.7.0",
+    "@lezer/lr": "^1.4.0",
+    "@lezer/common": "^1.2.0"
+  },
+  "dependencies": {
+    "@lezer/lr": "^1.4.0",
+    "@lezer/common": "^1.2.0"
+  }
+} 

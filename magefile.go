@@ -68,6 +68,14 @@ func Build() error {
 		return err
 	}
 
+	// Build SecLang grammar if needed
+	if _, err := os.Stat("public/seclang-parser.js"); os.IsNotExist(err) {
+		fmt.Println("Building SecLang grammar...")
+		if err := sh.RunV("npm", "run", "build-grammar"); err != nil {
+			return fmt.Errorf("failed to build SecLang grammar: %w", err)
+		}
+	}
+
 	if err := sh.RunV("cp", build.Default.GOROOT+"/misc/wasm/wasm_exec.js", targetDir); err != nil {
 		return err
 	}
@@ -76,6 +84,9 @@ func Build() error {
 		"app.css",
 		// "favicon.ico",
 		"app.js",
+		"seclang-mode.js",
+		"seclang-parser.js",
+		"seclang-parser.terms.js",
 	}
 	for _, file := range files {
 		if err := sh.RunV("cp", path.Join(".", "public", file), targetDir); err != nil {

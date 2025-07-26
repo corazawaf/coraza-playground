@@ -7,7 +7,10 @@ var ua = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 F
 var directives = CodeMirror(document.querySelector("#directives"), {
     value: "",
     theme: "ayu-dark",
-    mode: "none"
+    mode: "seclang",
+    lineNumbers: true,
+    indentUnit: 2,
+    tabSize: 2
 });
 
 var http_req = CodeMirror(document.querySelector("#httprequest"), {
@@ -372,8 +375,9 @@ function updateResults(result) {
         $('#rules_matched_total').text(customRulesCount);
         $('#crs_rules_total').text(crsRulesCount);
         
-        // Update sidebar stats
-        $('#sidebar-rules-matched').text(customRulesCount);
+        // Update sidebar stats (total of all visible rules)
+        const totalVisibleRules = customRulesCount + crsRulesCount;
+        $('#sidebar-rules-matched').text(totalVisibleRules);
         
         console.log(`Rule filtering: ${totalRulesCount} total → ${customRulesCount} custom + ${crsRulesCount} CRS + ${adminRulesCount} administrative`);
             
@@ -503,6 +507,7 @@ function clearAll() {
         $('#engine_status').text('Ready');
         $('#rules-count').text('0');
         $('#crs-rules-count').text('0');
+        $('#sidebar-rules-matched').text('0');
         auditlog_editor.setValue('No audit log data available');
         $('#status-badge').hide();
         
@@ -534,29 +539,56 @@ function clearAll() {
 // Load example configuration
 function loadExample() {
     const exampleDirectives = `# Example WAF Configuration
-SecRuleEngine On
+
+SecRuleEngine On # change this to DetectionOnly if you want to see all rules matched
 SecRequestBodyAccess On
 SecResponseBodyAccess On
 
-# Block SQL injection attempts
+# SQL Injection Detection Rule
 SecRule ARGS "@detectSQLi" \\
     "id:1001,\\
-    phase:2,\\
-    block,\\
-    msg:'SQL Injection Attack',\\
-    logdata:'Matched Data: %{MATCHED_VAR} found within %{MATCHED_VAR_NAME}',\\
-    tag:'attack-sqli',\\
-    severity:'CRITICAL'"
+     phase:2,\\
+     block,\\
+     msg:'SQL Injection Attack',\\
+     logdata:'Matched Data: %{MATCHED_VAR} found within %{MATCHED_VAR_NAME}',\\
+     tag:'attack-sqli',\\
+     severity:'CRITICAL'"
 
-# Block XSS attempts
+# XSS Detection Rule  
 SecRule ARGS "@detectXSS" \\
     "id:1002,\\
-    phase:2,\\
-    block,\\
-    msg:'XSS Attack',\\
-    logdata:'Matched Data: %{MATCHED_VAR} found within %{MATCHED_VAR_NAME}',\\
-    tag:'attack-xss',\\
-    severity:'CRITICAL'"`;
+     phase:2,\\
+     block,\\
+     msg:'XSS Attack Detected',\\
+     logdata:'Matched Data: %{MATCHED_VAR} found within %{MATCHED_VAR_NAME}',\\
+     tag:'attack-xss',\\
+     severity:'CRITICAL'"
+
+# Variable and Operator Examples
+SecRule &REQUEST_HEADERS:Host "@eq 0" \\
+    "id:1003,\\
+     phase:1,\\
+     deny,\\
+     status:400,\\
+     msg:'Request Missing a Host Header'"
+
+# Collection and Action Examples
+SecAction \\
+    "id:1004,\\
+     phase:1,\\
+     setvar:tx.anomaly_score=0,\\
+     setvar:tx.sql_injection_score=0,\\
+     setvar:tx.xss_score=0,\\
+     nolog,\\
+     pass"
+
+# Pattern matching with regular expressions
+SecRule REQUEST_URI "@rx \\.php$" \\
+    "id:1005,\\
+     phase:1,\\
+     setvar:tx.is_php=1,\\
+     nolog,\\
+     pass"`;
 
     const exampleRequest = `POST /login HTTP/1.1
 Host: example.com
