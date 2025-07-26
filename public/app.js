@@ -375,8 +375,9 @@ function updateResults(result) {
         $('#rules_matched_total').text(customRulesCount);
         $('#crs_rules_total').text(crsRulesCount);
         
-        // Update sidebar stats
-        $('#sidebar-rules-matched').text(customRulesCount);
+        // Update sidebar stats (total of all visible rules)
+        const totalVisibleRules = customRulesCount + crsRulesCount;
+        $('#sidebar-rules-matched').text(totalVisibleRules);
         
         console.log(`Rule filtering: ${totalRulesCount} total → ${customRulesCount} custom + ${crsRulesCount} CRS + ${adminRulesCount} administrative`);
             
@@ -506,6 +507,7 @@ function clearAll() {
         $('#engine_status').text('Ready');
         $('#rules-count').text('0');
         $('#crs-rules-count').text('0');
+        $('#sidebar-rules-matched').text('0');
         auditlog_editor.setValue('No audit log data available');
         $('#status-badge').hide();
         
@@ -537,7 +539,8 @@ function clearAll() {
 // Load example configuration
 function loadExample() {
     const exampleDirectives = `# Example WAF Configuration
-SecRuleEngine On
+
+SecRuleEngine On # change this to DetectionOnly if you want to see all rules matched
 SecRequestBodyAccess On
 SecResponseBodyAccess On
 
