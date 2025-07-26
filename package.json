@@ -9,9 +9,9 @@
     "dev": "npm run build-grammar && mage run"
   },
   "devDependencies": {
-    "@lezer/generator": "^1.7.0",
-    "@lezer/lr": "^1.4.0",
-    "@lezer/common": "^1.2.0"
+    "@lezer/generator": "1.8.0",
+    "@lezer/lr": "1.4.2",
+    "@lezer/common": "1.2.3"
   },
   "dependencies": {
     "@lezer/lr": "^1.4.0",
