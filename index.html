@@ -81,13 +81,22 @@
             </a>
             
             <div class="navbar-nav ms-auto">
-                <button class="btn btn-primary btn-sm me-2" onclick="run();" id="run-btn">
+                <button class="btn btn-primary btn-sm me-2" onclick="run();" id="run-btn"
+                        data-bs-toggle="tooltip" 
+                        data-bs-placement="bottom" 
+                        title="Execute WAF analysis on the provided HTTP request/response">
                     <i class="fas fa-play me-1"></i> Run Analysis
                 </button>
-                <button class="btn btn-outline-light btn-sm me-2" onclick="save();">
+                <button class="btn btn-outline-light btn-sm me-2" onclick="save();"
+                        data-bs-toggle="tooltip" 
+                        data-bs-placement="bottom" 
+                        title="Generate shareable link for this configuration">
                     <i class="fas fa-share me-1"></i> Share
                 </button>
-                <button class="btn btn-outline-light btn-sm me-2" onclick="clearAll();">
+                <button class="btn btn-outline-light btn-sm me-2" onclick="clearAll();"
+                        data-bs-toggle="tooltip" 
+                        data-bs-placement="bottom" 
+                        title="Clear all inputs and reset to default state">
                     <i class="fas fa-trash me-1"></i> Clear
                 </button>
                 <a class="btn btn-outline-light btn-sm me-2" href="https://github.com/corazawaf/coraza" target="_blank">
@@ -142,10 +151,16 @@
                     <div class="mb-4">
                         <h6 class="sidebar-heading">Quick Actions</h6>
                         <div class="d-grid gap-2">
-                            <button class="btn btn-outline-primary btn-sm" onclick="loadExample();">
+                            <button class="btn btn-outline-primary btn-sm" onclick="loadExample();"
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-placement="right" 
+                                    title="Load sample directives and HTTP request for testing">
                                 <i class="fas fa-code me-1"></i> Load Example
                             </button>
-                            <button class="btn btn-outline-secondary btn-sm" onclick="exportResults();">
+                            <button class="btn btn-outline-secondary btn-sm" onclick="exportResults();"
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-placement="right" 
+                                    title="Download analysis results as JSON file">
                                 <i class="fas fa-download me-1"></i> Export Results
                             </button>
                         </div>
@@ -174,9 +189,16 @@
                             <h5 class="panel-title">
                                 <i class="fas fa-cog text-primary me-2"></i>
                                 WAF Directives
+                                <i class="fas fa-info-circle text-muted ms-1" 
+                                   data-bs-toggle="tooltip" 
+                                   data-bs-placement="top" 
+                                   title="Enter SecLang directives like: SecRule ARGS &quot;@contains select&quot; &quot;id:1001,phase:2,block,msg:'SQL Injection'&quot;"></i>
                             </h5>
                             <div class="panel-actions">
-                                <button class="btn btn-sm btn-outline-light" onclick="formatDirectives();">
+                                <button class="btn btn-sm btn-outline-light" onclick="formatDirectives();"
+                                        data-bs-toggle="tooltip" 
+                                        data-bs-placement="top" 
+                                        title="Format and beautify directives">
                                     <i class="fas fa-magic"></i>
                                 </button>
                             </div>
@@ -192,9 +214,16 @@
                             <h5 class="panel-title">
                                 <i class="fas fa-arrow-right text-success me-2"></i>
                                 HTTP Request
+                                <i class="fas fa-info-circle text-muted ms-1" 
+                                   data-bs-toggle="tooltip" 
+                                   data-bs-placement="top" 
+                                   title="Enter a complete HTTP request including method, headers, and body. Example: GET /login?username=admin HTTP/1.1"></i>
                             </h5>
                             <div class="panel-actions">
-                                <button class="btn btn-sm btn-outline-light" onclick="formatRequest();">
+                                <button class="btn btn-sm btn-outline-light" onclick="formatRequest();"
+                                        data-bs-toggle="tooltip" 
+                                        data-bs-placement="top" 
+                                        title="Format and beautify HTTP request">
                                     <i class="fas fa-magic"></i>
                                 </button>
                             </div>
@@ -210,9 +239,16 @@
                             <h5 class="panel-title">
                                 <i class="fas fa-arrow-left text-warning me-2"></i>
                                 HTTP Response
+                                <i class="fas fa-info-circle text-muted ms-1" 
+                                   data-bs-toggle="tooltip" 
+                                   data-bs-placement="top" 
+                                   title="Enter HTTP response headers and body. Example: HTTP/1.1 200 OK\nContent-Type: text/html\n\n&lt;html&gt;Response content&lt;/html&gt;"></i>
                             </h5>
                             <div class="panel-actions">
-                                <button class="btn btn-sm btn-outline-light" onclick="formatResponse();">
+                                <button class="btn btn-sm btn-outline-light" onclick="formatResponse();"
+                                        data-bs-toggle="tooltip" 
+                                        data-bs-placement="top" 
+                                        title="Format and beautify HTTP response">
                                     <i class="fas fa-magic"></i>
                                 </button>
                             </div>
