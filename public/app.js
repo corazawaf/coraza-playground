@@ -753,6 +753,15 @@ function save() {
     }
 }
 
+// Initialize Bootstrap tooltips
+$(document).ready(function() {
+    // Initialize all tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+
 // Window resize handler
 $(window).on('resize', function() {
     setTimeout(refreshCodeMirrorInstances, 100);
