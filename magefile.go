@@ -76,7 +76,7 @@ func Build() error {
 		}
 	}
 
-	if err := sh.RunV("cp", build.Default.GOROOT+"/misc/wasm/wasm_exec.js", targetDir); err != nil {
+	if err := sh.RunV("cp", build.Default.GOROOT+"/lib/wasm/wasm_exec.js", targetDir); err != nil {
 		return err
 	}
 	files := []string{
