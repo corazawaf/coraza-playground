@@ -10,8 +10,8 @@
   },
   "devDependencies": {
     "@lezer/generator": "1.8.0",
-    "@lezer/lr": "1.4.2",
-    "@lezer/common": "1.2.3"
+    "@lezer/lr": "1.4.4",
+    "@lezer/common": "1.4.0"
   },
   "dependencies": {
     "@lezer/lr": "^1.4.0",
