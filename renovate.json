@@ -5,5 +5,8 @@
   ],
   "constraints": {
     "go": "1.23"
-  }
+  },
+  "postUpdateOptions": [
+    "gomodTidy"
+  ]
 }
