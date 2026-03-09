@@ -7,7 +7,7 @@ toolchain go1.24.13
 require (
 	github.com/corazawaf/coraza-coreruleset/v4 v4.24.0
 	github.com/corazawaf/coraza/v3 v3.3.3
-	github.com/magefile/mage v1.15.1-0.20250615140142-78acbaf2e3ae
+	github.com/magefile/mage v1.16.0
 )
 
 require (
