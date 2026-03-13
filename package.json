@@ -6,7 +6,7 @@
   "scripts": {
     "build-grammar": "lezer-generator grammar/seclang.grammar -o public/seclang-parser.js",
     "build": "npm run build-grammar",
-    "dev": "npm run build-grammar && mage run"
+    "dev": "npm run build-grammar"
   },
   "devDependencies": {
     "@lezer/generator": "1.8.0",
