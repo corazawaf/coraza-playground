@@ -82,7 +82,6 @@ func Build() error {
 	files := []string{
 		"index.html",
 		"app.css",
-		// "favicon.ico",
 		"app.js",
 		"seclang-mode.js",
 		"seclang-parser.js",
@@ -103,8 +102,4 @@ func Build() error {
 
 func Test() error {
 	return sh.RunV("go", "test", "./internal")
-}
-
-func Run() error {
-	return sh.RunV("go", "run", "testserver/main.go")
 }
