@@ -1,4 +1,4 @@
-// Copyright 2024 The OWASP Coraza contributors
+// Copyright 2026 The OWASP Coraza contributors
 // SPDX-License-Identifier: Apache-2.0
 
 export interface ExportData {
