@@ -76,9 +76,9 @@ func Build() error {
 		}
 	}
 
-	// Build frontend with Vite (includes grammar build via npm run build)
-	fmt.Println("Building frontend with Vite...")
-	if err := sh.RunV("npx", "vite", "build"); err != nil {
+	// Build frontend (grammar generation + TypeScript check + Vite bundling)
+	fmt.Println("Building frontend...")
+	if err := sh.RunV("npm", "run", "build"); err != nil {
 		return fmt.Errorf("failed to build frontend: %w", err)
 	}
 

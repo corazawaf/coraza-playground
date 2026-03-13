@@ -25,7 +25,7 @@ export function Toast({ type, message, onClose }: ToastProps) {
           <AlertTriangle size={16} />
         )}
         <strong>{type === 'success' ? 'Success' : 'Error'}</strong>
-        <button className="toast-close" onClick={onClose}>
+        <button type="button" className="toast-close" onClick={onClose} aria-label="Close notification">
           <X size={14} />
         </button>
       </div>

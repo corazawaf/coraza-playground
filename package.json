@@ -5,23 +5,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-<<<<<<< feat/react-frontend
     "build-grammar": "lezer-generator grammar/seclang.grammar -o src/lang/seclang-parser.ts",
     "dev": "npm run build-grammar && vite",
     "build": "npm run build-grammar && tsc -b && vite build",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest"
-=======
-    "build-grammar": "lezer-generator grammar/seclang.grammar -o public/seclang-parser.js",
-    "build": "npm run build-grammar",
-    "dev": "npm run build-grammar"
-  },
-  "devDependencies": {
-    "@lezer/generator": "1.8.0",
-    "@lezer/lr": "1.4.8",
-    "@lezer/common": "1.5.1"
->>>>>>> chore/cleanup-and-ci
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.18.0",
