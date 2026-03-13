@@ -35,7 +35,9 @@ jobs:
         run: npm ci
       - name: Lint
         run: go run mage.go lint
-      - name: Tests
+      - name: Go tests
         run: go run mage.go test
+      - name: Frontend tests
+        run: npm test
       - name: Build
         run: go run mage.go build

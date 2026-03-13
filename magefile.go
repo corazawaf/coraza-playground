@@ -12,7 +12,6 @@ import (
 	"go/build"
 	"io"
 	"os"
-	"path"
 
 	"github.com/magefile/mage/sh"
 )
@@ -63,36 +62,33 @@ func Lint() error {
 	return nil
 }
 
+// Build compiles the frontend with Vite and the WASM binary.
 func Build() error {
 	if err := os.MkdirAll(targetDir, 0700); err != nil {
 		return err
 	}
 
-	// Build SecLang grammar if needed
-	if _, err := os.Stat("public/seclang-parser.js"); os.IsNotExist(err) {
-		fmt.Println("Building SecLang grammar...")
-		if err := sh.RunV("npm", "run", "build-grammar"); err != nil {
-			return fmt.Errorf("failed to build SecLang grammar: %w", err)
+	// Install npm dependencies if needed
+	if _, err := os.Stat("node_modules"); os.IsNotExist(err) {
+		fmt.Println("Installing npm dependencies...")
+		if err := sh.RunV("npm", "ci"); err != nil {
+			return fmt.Errorf("failed to install npm dependencies: %w", err)
 		}
 	}
 
+	// Build frontend with Vite (includes grammar build via npm run build)
+	fmt.Println("Building frontend with Vite...")
+	if err := sh.RunV("npx", "vite", "build"); err != nil {
+		return fmt.Errorf("failed to build frontend: %w", err)
+	}
+
+	// Copy wasm_exec.js from Go installation
 	if err := sh.RunV("cp", build.Default.GOROOT+"/lib/wasm/wasm_exec.js", targetDir); err != nil {
 		return err
 	}
-	files := []string{
-		"index.html",
-		"app.css",
-		"app.js",
-		"seclang-mode.js",
-		"seclang-parser.js",
-		"seclang-parser.terms.js",
-	}
-	for _, file := range files {
-		if err := sh.RunV("cp", path.Join(".", "public", file), targetDir); err != nil {
-			return err
-		}
-	}
 
+	// Build WASM binary
+	fmt.Println("Building WASM binary...")
 	if err := sh.RunWithV(map[string]string{"GOOS": "js", "GOARCH": "wasm"}, "go", "build", "-o", targetDir+"/playground.wasm", "-tags=no_fs_access", "cmd/playground/main.go"); err != nil {
 		return err
 	}
@@ -100,6 +96,7 @@ func Build() error {
 	return nil
 }
 
+// Test runs Go unit tests.
 func Test() error {
 	return sh.RunV("go", "test", "./internal")
 }

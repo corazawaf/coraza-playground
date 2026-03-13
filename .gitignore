@@ -1,3 +1,7 @@
 www
+node_modules
 .DS_Store
 .idea
+dist
+src/lang/seclang-parser.ts
+src/lang/seclang-parser.terms.ts
