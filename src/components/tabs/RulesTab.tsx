@@ -25,8 +25,8 @@ export function RulesTab({ rules, emptyMessage, badgeClass }: RulesTabProps) {
               <td colSpan={2}>{emptyMessage}</td>
             </tr>
           ) : (
-            rules.map((rule, i) => (
-              <tr key={i} className="fade-in">
+            rules.map((rule) => (
+              <tr key={`${rule[0]}-${rule[1]}`} className="fade-in">
                 <td>
                   <span className={`badge ${badgeClass}`}>{rule[0]}</span>
                 </td>

@@ -49,8 +49,8 @@ export function CollectionsTab({ collections }: CollectionsTabProps) {
                 </td>
               </tr>
             ) : (
-              filtered.map((col, i) => (
-                <tr key={i} className="fade-in">
+              filtered.map((col) => (
+                <tr key={`${col[0]}-${col[1]}-${col[2]}`} className="fade-in">
                   <td>{col[0]}</td>
                   <td>{col[1]}</td>
                   <td>{col[2]}</td>

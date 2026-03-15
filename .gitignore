@@ -5,3 +5,4 @@ node_modules
 dist
 src/lang/seclang-parser.ts
 src/lang/seclang-parser.terms.ts
+tsconfig.tsbuildinfo

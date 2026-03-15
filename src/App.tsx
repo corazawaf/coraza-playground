@@ -124,7 +124,7 @@ export function App() {
   }, [])
 
   const handleRun = useCallback(() => {
-    const updatedRequest = run(
+    const { updatedRequest, success } = run(
       directivesValue,
       requestValue,
       responseValue,
@@ -135,7 +135,7 @@ export function App() {
       setRequestValue(updatedRequest)
     }
     setLastAnalysis(new Date().toLocaleTimeString())
-    if (!error) {
+    if (success) {
       showToast('success', 'Analysis completed successfully!')
     }
   }, [
@@ -146,7 +146,6 @@ export function App() {
     useCrs,
     autoContentLength,
     setRequestValue,
-    error,
     showToast,
   ])
 

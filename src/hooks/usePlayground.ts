@@ -47,8 +47,8 @@ export function usePlayground() {
       responseValue: string,
       useCrs: boolean,
       useAutoContentLength: boolean,
-    ): string => {
-      if (!wasmReady) return requestValue
+    ): { updatedRequest: string; success: boolean } => {
+      if (!wasmReady) return { updatedRequest: requestValue, success: false }
 
       setRunning(true)
       setError(null)
@@ -64,7 +64,7 @@ export function usePlayground() {
         if (result.error) {
           setError(result.error)
           setRunning(false)
-          return req
+          return { updatedRequest: req, success: false }
         }
 
         const collections: Collection[] = JSON.parse(result.collections || '[]')
@@ -101,10 +101,12 @@ export function usePlayground() {
         })
       } catch (err: unknown) {
         setError(`Unexpected error: ${err instanceof Error ? err.message : String(err)}`)
+        setRunning(false)
+        return { updatedRequest: req, success: false }
       }
 
       setRunning(false)
-      return req
+      return { updatedRequest: req, success: true }
     },
     [wasmReady],
   )
