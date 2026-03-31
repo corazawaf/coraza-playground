@@ -3,7 +3,7 @@ module github.com/corazawaf/coraza-playground
 go 1.25.0
 
 require (
-	github.com/corazawaf/coraza-coreruleset/v4 v4.24.1
+	github.com/corazawaf/coraza-coreruleset/v4 v4.25.0
 	github.com/corazawaf/coraza/v3 v3.5.0
 	github.com/magefile/mage v1.17.0
 )
