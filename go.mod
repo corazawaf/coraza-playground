@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	github.com/corazawaf/coraza-coreruleset/v4 v4.25.0
 	github.com/corazawaf/coraza/v3 v3.7.0
-	github.com/magefile/mage v1.17.1
+	github.com/magefile/mage v1.17.2
 )
 
 require (
